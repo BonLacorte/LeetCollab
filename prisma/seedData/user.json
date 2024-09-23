@@ -1,0 +1,111 @@
+[
+    {
+        "userId": "f1a7eaa7-4d3f-45e3-91ad-f9e4a4f0b7f2",
+        "name": "Alice Johnson",
+        "email": "alice.johnson@example.com",
+        "username": "alice.johnson",
+        "role": "USER",
+        "password": "@Alice12345",
+        "image": "https://avatars.githubusercontent.com/u/103584313?v=4",
+        "createdAt": "2024-09-14T10:00:00Z"
+    },
+    {
+        "userId": "2c6f9460-3b42-42c4-8c3b-167d7ebaf478",
+        "name": "Bob Smith",
+        "username" : "bob.smith",
+        "email": "bob.smith@example.com",
+        "role": "USER",
+        "password": "@Bob12345",
+        "image": "https://avatars.githubusercontent.com/u/103584313?v=4",
+        "createdAt": "2024-09-14T19:00:00Z",
+        "updatedAt": "2024-09-14T19:00:00Z"
+    },
+    {
+        "userId": "3fb78d95-eabb-4f07-950b-3c23916b7468",
+        "name": "Charlie Brown",
+        "username": "charlie.brown",
+        "email": "charlie.brown@example.com",
+        "role": "USER",
+        "password": "@Charlie12345",
+        "image": "https://avatars.githubusercontent.com/u/103584313?v=4",
+        "createdAt": "2024-09-14T19:00:00Z",
+        "updatedAt": "2024-09-14T19:00:00Z"
+    },
+    {
+        "userId": "07a8f762-0223-47ec-846e-8d73c169e95a",
+        "name": "Diana Adams",
+        "username": "diana.adams",
+        "email": "diana.adams@example.com",
+        "role": "ADMIN",
+        "password": "@Diana12345",
+        "image": "https://avatars.githubusercontent.com/u/103584313?v=4",
+        "createdAt": "2024-09-14T19:00:00Z",
+        "updatedAt": "2024-09-14T19:00:00Z"
+    },
+    {
+        "userId": "8050a171-8a4e-40a2-853a-bb9196be939b",
+        "name": "Ethan Carter",
+        "username": "ethan.carter",
+        "email": "ethan.carter@example.com",
+        "role": "USER",
+        "password": "@Ethan12345",
+        "image": "https://avatars.githubusercontent.com/u/103584313?v=4",
+        "createdAt": "2024-09-14T19:00:00Z",
+        "updatedAt": "2024-09-14T19:00:00Z"
+    },
+    {
+        "userId": "392fdcdf-c67b-45df-9391-9e9d76f2e4d7",
+        "name": "Fiona Davis",
+        "username": "fiona.davis",
+        "email": "fiona.davis@example.com",
+        "role": "USER",
+        "password": "@Fiona12345",
+        "image": "https://avatars.githubusercontent.com/u/103584313?v=4",
+        "createdAt": "2024-09-14T19:00:00Z",
+        "updatedAt": "2024-09-14T19:00:00Z"
+    },
+    {
+        "userId": "bc26868d-b83d-4708-b7b9-c84d29bce3f3",
+        "name": "George Evans",
+        "username": "george.evans",
+        "email": "george.evans@example.com",
+        "role": "ADMIN",
+        "password": "@George12345",
+        "image": "https://avatars.githubusercontent.com/u/103584313?v=4",
+        "createdAt": "2024-09-14T19:00:00Z",
+        "updatedAt": "2024-09-14T19:00:00Z"
+    },
+    {
+        "userId": "4d53d89f-91a2-4296-8e98-df57b13650bb",
+        "name": "Hannah Garcia",
+        "username": "hannah.garcia",
+        "email": "hannah.garcia@example.com",
+        "role": "USER",
+        "password": "@Hannah12345",
+        "image": "https://avatars.githubusercontent.com/u/103584313?v=4",
+        "createdAt": "2024-09-14T19:00:00Z",
+        "updatedAt": "2024-09-14T19:00:00Z"
+    },
+    {
+        "userId": "81eb5f79-890f-4f96-80b1-bf22cc8ec1ed",
+        "name": "Ian Hamilton",
+        "username": "ian.hamilton",
+        "email": "ian.hamilton@example.com",
+        "role": "USER",
+        "password": "@Ian12345",
+        "image": "https://avatars.githubusercontent.com/u/103584313?v=4",
+        "createdAt": "2024-09-14T19:00:00Z",
+        "updatedAt": "2024-09-14T19:00:00Z"
+    },
+    {
+        "userId": "a61a35e2-8425-4059-9dbb-04824f9b2d7b",
+        "name": "Bon Lacorte",
+        "username": "bon.lacorte",
+        "email": "bon.lacorte@example.com",
+        "role": "ADMIN",
+        "password": "@BonLacorte123",
+        "image": "https://avatars.githubusercontent.com/u/103584313?v=4",
+        "createdAt": "2024-09-14T19:00:00Z",
+        "updatedAt": "2024-09-14T19:00:00Z"
+    }
+]

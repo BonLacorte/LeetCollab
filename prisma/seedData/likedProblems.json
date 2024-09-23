@@ -1,0 +1,23 @@
+[
+    {
+        "likedProblemId": "d746f795-6d82-4488-8976-0d0c0f79ea4e",
+        "userId": "392fdcdf-c67b-45df-9391-9e9d76f2e4d7",
+        "problemId": "abdb6c33-81ff-45dd-a653-ceae0783729d",
+        "createdAt": "2024-09-14T19:00:00Z",
+        "updatedAt": "2024-09-14T19:00:00Z"
+    },
+    {
+        "likedProblemId": "b1487c95-9205-48da-a33e-9865441f5f1d",
+        "userId": "3fb78d95-eabb-4f07-950b-3c23916b7468",
+        "problemId": "037fce5f-2c74-4f7a-a863-8cdd4db8a56b",
+        "createdAt": "2024-09-14T19:00:00Z",
+        "updatedAt": "2024-09-14T19:00:00Z"
+    },
+    {
+        "likedProblemId": "6347ae85-036e-4d38-94a0-df719f7f1db2",
+        "userId": "2c6f9460-3b42-42c4-8c3b-167d7ebaf478",
+        "problemId": "037fce5f-2c74-4f7a-a863-8cdd4db8a56b",
+        "createdAt": "2024-09-14T19:00:00Z",
+        "updatedAt": "2024-09-14T19:00:00Z"
+    }
+]  
