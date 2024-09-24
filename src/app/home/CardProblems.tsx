@@ -21,6 +21,9 @@ type Problem = {
     title: string;
     difficulty: string;
     category: string;
+    order: number;
+    description: string;
+    
 }
 
 const ITEMS_PER_PAGE = 10
@@ -28,10 +31,11 @@ const ITEMS_PER_PAGE = 10
 const difficulties = ["Easy", "Medium", "Hard"];
 const categories = ["Array", "Linked List", "Stack", "Binary Search"];
 
-const CardProblems = (props: Props) => {
+const CardProblems = ({socket, username}: {socket: Socket | null, username: string | null}) => {
     const { data: session } = useSession(); // Get the session data
-    const [username, setUsername] = useState<string | null>(null);
+    // const [username, setUsername] = useState<string | null>(null);
 
+    const [loading, setLoading] = useState(true);
     const [problems, setProblems] = useState<Problem[]>([]);
     const [searchTerm, setSearchTerm] = useState('')
     const [currentPage, setCurrentPage] = useState(1)
@@ -43,7 +47,7 @@ const CardProblems = (props: Props) => {
     const [selectedProblem, setSelectedProblem] = useState<Problem | null>(null);
     
     const [roomPassword, setRoomPassword] = useState('');
-    const [socket, setSocket] = useState<Socket | null>(null);    
+
     
     // const newSocket = useMemo(() => io('http://localhost:8000'), [])
     
@@ -58,24 +62,24 @@ const CardProblems = (props: Props) => {
     // Initialize socket connection
 
     // Initialize socket connection
-    useEffect(() => {
+    // useEffect(() => {
 
-        // Set the username when the session is available
-        if (session?.user?.name) {
-            setUsername(session.user.name);
-        }
+    //     // Set the username when the session is available
+    //     if (session?.user?.name) {
+    //         setUsername(session.user.name);
+    //     }
 
-        const newSocket = io('http://localhost:8000'); // Connect to the backend
-        setSocket(newSocket);
+    //     const newSocket = io('http://localhost:8000'); // Connect to the backend
+    //     setSocket(newSocket);
 
 
-        return () => {
-            if (socket) {
-                socket.emit('leaveRoom')
-                newSocket.close();
-            }
-        };
-    }, []);
+    //     return () => {
+    //         if (socket) {
+    //             socket.emit('leaveRoom')
+    //             newSocket.close();
+    //         }
+    //     };
+    // }, []);
 
 
     const handleProblemClick = (problem: Problem) => {
@@ -87,7 +91,8 @@ const CardProblems = (props: Props) => {
         if (selectedProblem && socket) {
             const roomId = Math.random().toString(36).substring(7); // Generate random roomId
 
-            socket.emit('createRoom', { roomId, username }, (response: any) => {
+            socket.emit('createRoom', { roomId, username, selectedProblem }, (response: any) => {
+                console.log("createRoom username: ", username);
                 if (response.success) {
                     router.push(`/Workspace/room/${roomId}/problem/${selectedProblem.problemId}`);
                 } else {
@@ -101,8 +106,14 @@ const CardProblems = (props: Props) => {
     // Fetch problems from the API
     const fetchProblems = async () => {
         try {
-        const response = await axios.get('http://localhost:8000/problem/');
-        return response.data;
+            // const response = await axios.get('http://localhost:3000/api/problem/');
+            const response = await fetch('api/problem/', {
+                method: "GET",
+            });
+            const data = await response.json();
+            console.log(data.problems)
+            setLoading(false);
+            return data.problems;
         } catch (error) {
         console.error('Error fetching problems:', error);
         return [];
