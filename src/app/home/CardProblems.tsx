@@ -18,6 +18,7 @@ type Props = {}
 
 type Problem = {
     problemId: number;
+    idTitle: string;
     title: string;
     difficulty: string;
     category: string;
@@ -48,40 +49,6 @@ const CardProblems = ({socket, username}: {socket: Socket | null, username: stri
     
     const [roomPassword, setRoomPassword] = useState('');
 
-    
-    // const newSocket = useMemo(() => io('http://localhost:8000'), [])
-    
-    // newSocket.on('connect', () => {
-    //     console.log('Connected to the server')
-    // })
-
-    // newSocket.on('disconnect', () => {
-    //     console.log('Disconnected from the server')
-    // })
-
-    // Initialize socket connection
-
-    // Initialize socket connection
-    // useEffect(() => {
-
-    //     // Set the username when the session is available
-    //     if (session?.user?.name) {
-    //         setUsername(session.user.name);
-    //     }
-
-    //     const newSocket = io('http://localhost:8000'); // Connect to the backend
-    //     setSocket(newSocket);
-
-
-    //     return () => {
-    //         if (socket) {
-    //             socket.emit('leaveRoom')
-    //             newSocket.close();
-    //         }
-    //     };
-    // }, []);
-
-
     const handleProblemClick = (problem: Problem) => {
         setSelectedProblem(problem);
         setIsModalOpen(true);
@@ -94,7 +61,7 @@ const CardProblems = ({socket, username}: {socket: Socket | null, username: stri
             socket.emit('createRoom', { roomId, username, selectedProblem }, (response: any) => {
                 console.log("createRoom username: ", username);
                 if (response.success) {
-                    router.push(`/Workspace/room/${roomId}/problem/${selectedProblem.problemId}`);
+                    router.push(`workspace/room/${roomId}/problem/${selectedProblem.idTitle}`);
                 } else {
                     console.error(response.message);
                 }
@@ -111,7 +78,7 @@ const CardProblems = ({socket, username}: {socket: Socket | null, username: stri
                 method: "GET",
             });
             const data = await response.json();
-            console.log(data.problems)
+            console.log("fetchProblems Problems: ", data.problems)
             setLoading(false);
             return data.problems;
         } catch (error) {

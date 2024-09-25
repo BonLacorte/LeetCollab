@@ -129,7 +129,7 @@ io.on('connection', (socket) => {
             console.log("joinRoom - User joined the room: ", roomId);
             
 
-            callback({ success: true, selectedProblem: room?.selectedProblem?.problemId });
+            callback({ success: true, selectedProblem: room?.selectedProblem?.idTitle });
             // io.to(roomId).emit('userJoined', { roomId, username });
         } else {
             console.log("joinRoom - Room does not exist: ", roomId);

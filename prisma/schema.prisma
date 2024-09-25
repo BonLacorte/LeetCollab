@@ -32,8 +32,8 @@ model User {
 
 model Problem {
   problemId       String          @id @default(uuid())
-  idTitle         String
-  title           String
+  idTitle         String          @unique
+  title           String          @unique
   category        String
   difficulty      String
   order           Int

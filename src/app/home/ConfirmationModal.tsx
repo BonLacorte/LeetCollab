@@ -29,12 +29,12 @@ const ConfirmationModal: React.FC<Props> = ({ isOpen, onClose, onConfirm, roomPa
                         Answering a problem will create a room. Do you want to continue?
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <Input
+                {/* <Input
                     placeholder="Enter room password"
                     value={roomPassword}
                     onChange={(e) => setRoomPassword(e.target.value)}
                     type="password"
-                />
+                /> */}
                 <AlertDialogFooter>
                     <AlertDialogCancel onClick={onClose}>No</AlertDialogCancel>
                     <AlertDialogAction onClick={onConfirm}>Yes</AlertDialogAction>

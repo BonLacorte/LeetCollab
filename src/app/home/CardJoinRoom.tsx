@@ -61,7 +61,7 @@ const CardJoinRoom = ({socket}: {socket: Socket | null}) => {
                                 console.log("User joining room: ", username);
                                 console.log("Joined room: ", roomId);   
                                 // push to the workspace page where the room is
-                                router.push(`/Workspace/room/${roomId}/problem/${problemId}`);
+                                router.push(`/workspace/room/${roomId}/problem/${problemId}`);
                             } else {
                                 console.error(response.message);
                                 setError(response.message || 'Unknown error');
