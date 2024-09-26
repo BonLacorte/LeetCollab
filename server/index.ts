@@ -44,6 +44,7 @@ app.use(cors());
 type Room = {
     users: string[] | null;
     selectedProblem: Problem | null;
+    host: string;
 };
 
 type Problem = {
@@ -84,6 +85,7 @@ io.on('connection', (socket) => {
         rooms.set(roomId, {
             users: [username],
             selectedProblem,
+            host: username,
         });
 
         const room = rooms.get(roomId);
@@ -129,7 +131,7 @@ io.on('connection', (socket) => {
             console.log("joinRoom - User joined the room: ", roomId);
             
 
-            callback({ success: true, selectedProblem: room?.selectedProblem?.idTitle });
+            callback({ success: true, selectedProblem: room?.selectedProblem?.idTitle, host: room?.host });
             // io.to(roomId).emit('userJoined', { roomId, username });
         } else {
             console.log("joinRoom - Room does not exist: ", roomId);
@@ -138,6 +140,15 @@ io.on('connection', (socket) => {
         }
     });
 
+    // Get host
+    socket.on('getHost', ({ roomId }, callback) => {
+        console.log("getHost called")
+        console.log("getHost - Rooms: ", rooms)
+        console.log('getHost - Getting host: ', roomId);
+        const room = rooms.get(roomId);
+        console.log("getHost - Host: ", room?.host);
+        callback({ success: true, host: room?.host });
+    });
 
     // Change problem
     socket.on('changeProblem', ({ roomId, problemId }, callback) => {

@@ -26,6 +26,7 @@ const Workspace =  ({ params }: WorkspaceProps) => {
     const [username, setUsername] = useState<string | null>(null);
     const [problem, setProblem] = useState<Problem | null>(null);
     const [dbProblem, setDbProblem] = useState<DBProblem | null>(null);
+    const [host, setHost] = useState<string | null>(null);
 
     const { width, height } = useWindowSize();
 	const [success, setSuccess] = useState(false);
@@ -63,6 +64,16 @@ const Workspace =  ({ params }: WorkspaceProps) => {
             setProblem(problem);
         }   
 
+        // get the host
+        socket.emit('getHost', { roomId }, (response: any) => {
+            if (response.success) {
+                console.log('response.host: ', response.host);
+                setHost(response.host);
+            } else {
+                console.error(response.message);
+            }
+        });
+
     }, [roomId, session]);
 
     const fetchProblemByIdTitle = async () => {
@@ -94,7 +105,7 @@ const Workspace =  ({ params }: WorkspaceProps) => {
 
     return (
         <div>
-            <h1 className="text-center text-2xl font-bold mb-4">Room ID: {roomId} | Problem ID: {idTitle}</h1>
+            <h1 className="text-center text-2xl font-bold mb-4">Room ID: {roomId} | Problem ID: {idTitle} | Host: {host}</h1>
 
             <button 
                 onClick={handleLeaveRoom} 
