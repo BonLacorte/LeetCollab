@@ -14,8 +14,6 @@ import { io, Socket } from 'socket.io-client'; // Importing Socket.IO client
 import ConfirmationModal from "./ConfirmationModal";
 import { useSession } from 'next-auth/react'; // Assuming you're using NextAuth
 
-type Props = {}
-
 type Problem = {
     problemId: number;
     idTitle: string;

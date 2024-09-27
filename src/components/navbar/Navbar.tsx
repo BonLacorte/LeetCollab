@@ -4,9 +4,11 @@ import { getServerSession } from 'next-auth';
 import Link from 'next/link';
 import React from 'react'
 import UserAccountNav from '@/components/navbar/UserAccountNav';
+import { useSession } from 'next-auth/react';
 
-const Navbar = async () => {
-    const session = await getServerSession(authOptions)
+const Navbar = () => {
+    // const session = await getServerSession(authOptions)
+    const { data: session } = useSession();
 
     return (
         <div className='flex justify-between items-center w-full mb-7'>

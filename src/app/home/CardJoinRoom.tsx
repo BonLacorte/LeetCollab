@@ -5,43 +5,11 @@ import { useRouter } from 'next/navigation';
 import { io, Socket } from 'socket.io-client'; // Importing Socket.IO client
 import { useSession } from 'next-auth/react';
 
-const CardJoinRoom = ({socket}: {socket: Socket | null}) => {
-
-    const { data: session } = useSession(); // Get the session data
-    const [username, setUsername] = useState<string | null>(null);
-
-    useEffect(() => {
-        if (session?.user?.name) {
-            setUsername(session.user.name);
-        }
-    }, [session]);
-
+const CardJoinRoom = ({socket, username}: {socket: Socket | null, username: string | null}) => {
     const [roomId, setRoomId] = useState('');
     const [error, setError] = useState('');
 
     const router = useRouter();
-    // const [socket, setSocket] = useState<Socket | null>(null);  
-
-    // useEffect(() => {
-
-    //     // Set the username when the session is available
-    //     // if (session?.user?.name) {
-    //     //     setUsername(session.user.name);
-    //     // }
-
-    //     // const newSocket = io('http://localhost:8000'); // Connect to the backend
-    //     // setSocket(newSocket);
-
-
-    //     // return () => {
-    //     //     if (socket) {
-    //     //         socket.emit('leaveRoom')
-    //     //         newSocket.close();
-    //     //     }
-    //     // };
-    // }, []);
-
-    
 
     console.log("username: ", username);
 

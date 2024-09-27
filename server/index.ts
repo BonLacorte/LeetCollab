@@ -94,6 +94,7 @@ io.on('connection', (socket) => {
         // display the members of the room
         console.log("createRoom - Members of the room: ", room?.users);
 
+        io.to(roomId).emit('roomCreated', { roomId, username });
         callback({ success: true, roomId });
         console.log("createRoom - Room created: ", roomId);
         // io.to(roomId).emit('roomCreated', { roomId, username });
@@ -108,6 +109,7 @@ io.on('connection', (socket) => {
         const room = rooms.get(roomId);
         if (room) {
             console.log("Room exists: ", roomId);
+            io.to(roomId).emit('roomExists', { roomId, selectedProblem: room.selectedProblem?.idTitle, host: room.host });
             callback({ success: true });
         } else {
             callback({ success: false, message: 'Room does not exist' });
@@ -130,13 +132,13 @@ io.on('connection', (socket) => {
             // callback({ success: true });
             console.log("joinRoom - User joined the room: ", roomId);
             
-
+            io.to(roomId).emit('userJoined', { roomId, username });
             callback({ success: true, selectedProblem: room?.selectedProblem?.idTitle, host: room?.host });
             // io.to(roomId).emit('userJoined', { roomId, username });
         } else {
             console.log("joinRoom - Room does not exist: ", roomId);
-            // return callback({ success: false, message: 'Room does not exists' });
             // io.to(roomId).emit('roomDoesNotExist', { roomId, username });
+            callback({ success: false, message: 'Room does not exists' });
         }
     });
 
@@ -150,17 +152,30 @@ io.on('connection', (socket) => {
         callback({ success: true, host: room?.host });
     });
 
-    // Change problem
-    socket.on('changeProblem', ({ roomId, problemId }, callback) => {
-        console.log("changeProblem called")
-        console.log("changeProblem - Rooms: ", rooms)
-        console.log('changeProblem - Changing problem: ', problemId, " in room: ", roomId);
-        // rooms.get(roomId)?.selectedProblem = problemId;
-        console.log("changeProblem - Problem changed: ", problemId);
-        callback({ success: true });
-    });
+    // // Change problem
+    // socket.on('changeProblem', ({ roomId, problemId }, callback) => {
+    //     console.log("changeProblem called")
+    //     console.log("changeProblem - Rooms: ", rooms)
+    //     console.log('changeProblem - Changing problem: ', problemId, " in room: ", roomId);
+    //     // rooms.get(roomId)?.selectedProblem = problemId;
+    //     console.log("changeProblem - Problem changed: ", problemId);
+    //     callback({ success: true });
+    // });
 
-    
+    socket.on('changeProblem', ({ roomId, problemId, selectedProblem }, callback) => {
+        console.log("changeProblem called");
+        console.log("changeProblem - Rooms: ", rooms);
+        console.log('changeProblem - Changing problem: ', problemId, " in room: ", roomId);
+        console.log('changeProblem - Selected problem: ', selectedProblem);
+        const room = rooms.get(roomId);
+        if (room) {
+            room.selectedProblem = selectedProblem; // Update this based on your Problem type
+            io.to(roomId).emit('problemChanged', { problemId, selectedProblem });
+            callback({ success: true });
+        } else {
+            callback({ success: false, message: 'Room not found' });
+        }
+    });
 
     // Room leaving
     socket.on('leaveRoom', ({ roomId, username }, callback) => {
@@ -195,6 +210,6 @@ io.on('connection', (socket) => {
 });
 
 const port = Number(process.env.PORT) || 3001;
-server.listen(port, '0.0.0.0', () => {
+server.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });

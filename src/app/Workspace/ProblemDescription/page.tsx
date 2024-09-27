@@ -50,13 +50,9 @@ const ProblemDescription = ({roomId, idTitle, dbProblem, problem}: Props) => {
                     </TabsList>
                     <TabsContent value="description" className="p-4">
                         <Description
-                            // problem={currentProblem} 
                             idTitle={idTitle}
                             dbProblem={dbProblem}
                             problem={problem}
-                            // solved={solved}
-                            // liked={liked}
-                            // starred={starred}
                             handleLike={handleLike}
                             handleStar={handleStar}
                         />

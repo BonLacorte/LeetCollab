@@ -10,6 +10,9 @@ import { useSession } from 'next-auth/react'; // Assuming you're using NextAuth
 import useWindowSize from '@/hooks/useWindowSize';
 import { DBProblem, Problem } from "@/types/problems";
 import { problems } from '@/lib/problems';
+import Topbar from '@/components/topbar/Topbar';
+import { useGetUsername } from '@/hooks/useGetUsername';
+import { useSocket } from '@/components/SocketProvider';
 
 interface WorkspaceProps {
     params: {
@@ -21,9 +24,6 @@ interface WorkspaceProps {
 const Workspace =  ({ params }: WorkspaceProps) => {
     const { roomId, idTitle } = params; // Grab roomId and problemId from the dynamic route
     const router = useRouter();
-    const socket = io('http://localhost:8000'); // Adjust the server URL if needed
-    const { data: session } = useSession(); // Get the session data
-    const [username, setUsername] = useState<string | null>(null);
     const [problem, setProblem] = useState<Problem | null>(null);
     const [dbProblem, setDbProblem] = useState<DBProblem | null>(null);
     const [host, setHost] = useState<string | null>(null);
@@ -32,15 +32,14 @@ const Workspace =  ({ params }: WorkspaceProps) => {
 	const [success, setSuccess] = useState(false);
 	const [solved, setSolved] = useState(false);
 
+    const username = useGetUsername();
+    const socket = useSocket();
+
     useEffect(() => {
 
         console.log('Workspace - roomId: ', roomId);
         console.log('Workspace - idTitle: ', idTitle);
 
-        // Set the username when the session is available
-        if (session?.user?.name) {
-            setUsername(session.user.name);
-        }
 
         // fetchProblemByIdTitle()
         fetchProblemByIdTitle().then(setDbProblem);
@@ -64,17 +63,32 @@ const Workspace =  ({ params }: WorkspaceProps) => {
             setProblem(problem);
         }   
 
+
         // get the host
-        socket.emit('getHost', { roomId }, (response: any) => {
-            if (response.success) {
-                console.log('response.host: ', response.host);
+        if (socket) {
+            socket.emit('getHost', { roomId }, (response: any) => {
+                if (response.success) {
+                    console.log('response.host: ', response.host);
                 setHost(response.host);
             } else {
                 console.error(response.message);
             }
-        });
+            });
+        }
 
-    }, [roomId, session]);
+        if (socket) {
+            socket.on('problemChanged', ({ problemId }) => {
+                router.push(`/workspace/room/${roomId}/problem/${problemId}`);
+            });
+        }
+    
+        return () => {
+            if (socket) {
+                socket.off('problemChanged');
+            }
+        };
+
+    }, [socket, roomId, router]);
 
     const fetchProblemByIdTitle = async () => {
         const response = await fetch(`http://localhost:3000/api/problem/${idTitle}`, {
@@ -104,7 +118,8 @@ const Workspace =  ({ params }: WorkspaceProps) => {
     }
 
     return (
-        <div>
+        <>
+            <Topbar/>
             <h1 className="text-center text-2xl font-bold mb-4">Room ID: {roomId} | Problem ID: {idTitle} | Host: {host}</h1>
 
             <button 
@@ -121,45 +136,8 @@ const Workspace =  ({ params }: WorkspaceProps) => {
                     <Playground  /> {/* Coding playground */}
                 </div>
             </Split>
-        </div>
+        </>
     );
 }
 
 export default Workspace;
-
-// fetch the local data
-//  SSG
-// getStaticPaths => it create the dynamic routes
-// export async function getStaticPaths() {
-// 	// Assuming you have a way to get all roomIds and idTitles
-//     const idTitles = Object.keys(problems); // Replace with actual logic to get idTitles
-
-//     const paths = idTitles.map((idTitle) => ({
-//         params: { idTitle },
-//     }));
-
-//     return {
-//         paths,
-//         fallback: false,
-//     };
-// }
-
-// getStaticProps => it fetch the data
-
-// export async function getStaticProps({ params }: { params: { idTitle: string } }) {
-// 	const { idTitle } = params;
-//     console.log(idTitle)
-// 	const problem = problems[idTitle];
-
-// 	if (!problem) {
-// 		return {
-// 			notFound: true,
-// 		};
-// 	}
-// 	problem.handlerFunction = problem.handlerFunction.toString();
-// 	return {
-// 		props: {
-// 			problem,
-// 		},
-// 	};
-// }

@@ -26,23 +26,8 @@ const Description: React.FC<DescriptionProps> = ({
     const { liked, solved, setData, starred } = useGetUsersDataOnProblem(idTitle);
     const [updating, setUpdating] = useState(false);
 
-    // console.log("Description problem", problem);
-    // console.log("Description loading", loading);
-    // console.log("Description problemDifficultyClass", problemDifficultyClass);
-    // console.log("Description solved", solved);
-    // console.log("Description liked", liked);
-    // console.log("Description starred", starred);
-    // console.log("Description handleLike", handleLike);
-    // console.log("Description handleStar", handleStar);
-
     return (
         <div className='bg-dark-layer-1'>
-            {/* <div className='flex h-11 w-full items-center pt-2 bg-dark-layer-2 border border-red-700 text-black overflow-x-hidden'>
-                <div className={"bg-dark-layer-1 rounded-t-[5px] px-5 py-[10px] text-xs cursor-pointer"}>
-                    Description
-                </div>
-            </div> */}
-
             <div className='flex px-0 py-4 h-[calc(100vh-94px)] border border-red-500 overflow-y-auto'>
                 <div className='px-5'>
                     {/* Problem heading */}
