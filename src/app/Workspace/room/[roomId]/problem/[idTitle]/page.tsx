@@ -37,6 +37,19 @@ const Workspace =  ({ params }: WorkspaceProps) => {
 
     useEffect(() => {
 
+        // if (socket) {
+        //     socket.emit('isUserInRoomId', { roomId, username }, (response: any) => {
+        //         if (response.success) {
+        //             console.log('response.isInRoom: ', response.isInRoom);
+        //             // setIsInRoom(response.isInRoom);
+        //         } else {
+        //             if (!response.isInRoom) {
+        //                 router.push('/');
+        //             }
+        //         }
+        //     });
+        // }
+
         console.log('Workspace - roomId: ', roomId);
         console.log('Workspace - idTitle: ', idTitle);
 
@@ -133,7 +146,7 @@ const Workspace =  ({ params }: WorkspaceProps) => {
                 <ProblemDescription roomId={roomId} idTitle={idTitle} dbProblem={dbProblem as DBProblem} problem={problem as Problem} />  {/* Problem description */}
                 
                 <div className='w-1/2'>
-                    <Playground  /> {/* Coding playground */}
+                    <Playground roomId={roomId} idTitle={idTitle} /> {/* Coding playground */}
                 </div>
             </Split>
         </>

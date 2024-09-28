@@ -5,10 +5,10 @@ import Link from 'next/link';
 import React from 'react'
 import UserAccountNav from '@/components/navbar/UserAccountNav';
 import { useSession } from 'next-auth/react';
+import { useGetUsername } from '@/hooks/useGetUsername';
 
 const Navbar = () => {
-    // const session = await getServerSession(authOptions)
-    const { data: session } = useSession();
+    const username = useGetUsername();
 
     return (
         <div className='flex justify-between items-center w-full mb-7'>
@@ -57,8 +57,8 @@ const Navbar = () => {
                     </div> */}
 
                     {/* Sign In/Sign Out/Sign Up */}
-                    {session?.user ? (
-                        <UserAccountNav user={session.user} />
+                    {username ? (
+                        <UserAccountNav user={{ name: username }} />
                     ) : (
                         <Link href="/sign-in">
                             <button className='bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50'>

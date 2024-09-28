@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import http from 'http';
 import { Server } from 'socket.io';
+import { DBProblem } from '@/types/problems';
 // import userRoutes from './routes/userRoutes';
 // import problemRoutes from './routes/problemRoutes';
 
@@ -43,19 +44,11 @@ app.use(cors());
 
 type Room = {
     users: string[] | null;
-    selectedProblem: Problem | null;
+    selectedProblem: DBProblem | null;
     host: string;
 };
 
-type Problem = {
-    problemId: string;
-    idTitle: string;
-    title: string;
-    difficulty: string;
-    order: number;
-    createdAt: string;
-    updatedAt: string;
-};
+
 
 // Temporary in-memory store for rooms and their passwords
 // const rooms: { [key: string]: { password: string; users: string[] } } = {};
@@ -177,6 +170,67 @@ io.on('connection', (socket) => {
         }
     });
 
+    // Check if user is in room
+    socket.on('isUserInRoom', ({ username }, callback) => {
+        console.log("isUserInRoom called")
+        console.log("isUserInRoom - Rooms: ", rooms)
+
+        let userRoom = null;
+        let userRoomId = null;
+        // Iterate through all rooms to find the user
+        for (const [roomId, room] of Array.from(rooms.entries())) {
+            if (room.users && room.users.includes(username)) {
+                userRoom = room;
+                userRoomId = roomId;
+                break;
+            }
+        }
+    
+        if (userRoom) {
+            console.log(`User ${username} found in room ${userRoomId}`);
+
+            // display the problem id title
+            console.log("isUserInRoom - Problem id title: ", userRoom.selectedProblem?.idTitle);
+
+            callback({
+                success: true,
+                isInRoom: true,
+                roomId: userRoomId,
+                problemTitle: userRoom.selectedProblem?.idTitle
+            });
+        } else {
+            console.log(`User ${username} is not in any room`);
+            callback({
+                success: true,
+                isInRoom: false,
+                roomId: null,
+                problemTitle: null
+            });
+        }
+    });
+
+    // Check if user is in a specific room
+    socket.on('isUserInRoomId', ({ roomId, username }, callback) => {
+        console.log("isUserInRoomId called")
+        console.log("isUserInRoomId - Rooms: ", rooms)
+        console.log('isUserInRoomId - Checking if user is in room: ', roomId, " User: ", username);
+        const room = rooms.get(roomId);
+        if (room && room.users && room.users.includes(username)) {
+            callback({
+                success: true,
+                isInRoom: true,
+                problemTitle: room.selectedProblem?.idTitle
+            });
+        } else {
+            callback({
+                success: false,
+                isInRoom: false,
+                message: 'User not found in the room'
+            });
+        }
+    });
+    
+
     // Room leaving
     socket.on('leaveRoom', ({ roomId, username }, callback) => {
         console.log('leaveRoom - Leaving room: ', roomId, " User: ", username);
@@ -194,13 +248,55 @@ io.on('connection', (socket) => {
 
         // callback({ success: true });
         // io.to(roomId).emit('userLeft', { roomId, username });
+
         console.log("leaveRoom - Members of the room: ", room?.users);
+
+        // if the room is empty, delete it
         if (room?.users?.length === 0) {
             rooms.delete(roomId);
             console.log("leaveRoom - Room deleted: ", roomId);
         }
+
+        // if the room is not empty, emit the userLeft event
+        if (room?.users && room.users.length > 0) {
+            io.to(roomId).emit('userLeft', { roomId, username });
+            console.log("leaveRoom - User left the room: ", roomId);
+        }
+
+        // if the room is not empty and the user is the host, change the host to the next user in the room
+        if (room?.users && room.users.length > 0 && room.host === username) {
+            room.host = room.users[0];
+            io.to(roomId).emit('hostChanged', { roomId, newHost: room.host });
+            console.log("leaveRoom - Host changed: ", roomId);
+            console.log("leaveRoom - New host: ", room.host);
+        }
+
         callback({ success: true });
         console.log("leaveRoom - User left the room: ", roomId);
+    });
+
+    // Handle code change
+    socket.on('codeChange', ({ roomId, code }) => {
+        // console.log("codeChange - Changing code: ", code, " in room: ", roomId);
+        // const room = rooms.get(roomId);
+        // if (room) {
+        //     room.code = code;
+        // }
+        socket.to(roomId).emit('codeChange', code);
+    });
+
+    // Handle submission
+    socket.on('submitCode', ({ roomId, code }) => {
+        if (rooms.has(roomId)) {
+            io.to(roomId).emit('submissionStart', socket.id);
+        }
+    });
+
+    // Handle submission result
+    socket.on('submissionResult', ({ roomId, success, message }) => {
+        if (rooms.has(roomId)) {
+            io.to(roomId).emit('submissionResult', { success, message });
+        }
     });
 
     // Handle disconnection

@@ -9,6 +9,7 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { problems } from '@/lib/problems'; // Adjust the import path as needed
 import { useSocket } from '@/components/SocketProvider';
 import { useGetUsername } from '@/hooks/useGetUsername';
+import UserAccountNav from '../navbar/UserAccountNav';
 
 const Topbar = () => {
     const username = useGetUsername();
@@ -82,10 +83,13 @@ const Topbar = () => {
     return (
         <nav className='relative flex h-[50px] w-full shrink-0 items-center px-5 bg-dark-layer-1 text-dark-gray-7'>
             <div className={`flex w-full items-center justify-between ${isWorkspacePage ? "max-w-[1200px] mx-auto" : ""}`}>
+                
+                {/* LEFT SIDE */}
                 <Link href='/' className='h-[22px] flex-1'>
                     <img src='/logo-full.png' alt='Logo' className='h-full' />
                 </Link>
 
+                {/* MIDDLE SIDE */}
                 {isWorkspacePage && (
                     <div className='flex items-center gap-4 flex-1 justify-center'>
                         <div 
@@ -109,8 +113,18 @@ const Topbar = () => {
                     </div>
                 )}
 
+                {/* RIGHT SIDE */}
                 <div className='flex items-center space-x-4 flex-1 justify-end'>
                     {/* Add your existing navbar items here */}
+                    {username ? (
+                        <UserAccountNav user={{ name: username }} />
+                    ) : (
+                        <Link href="/sign-in">
+                            <button className='bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50'>
+                                Sign In
+                            </button>
+                        </Link>
+                    )}
                 </div>
             </div>
         </nav>
