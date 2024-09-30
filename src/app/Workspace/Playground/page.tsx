@@ -15,51 +15,125 @@ import TestCases from './TestCases/page';
 import { useToast } from '@/hooks/use-toast';
 import LoadingSubmitModal from './LoadingSubmitModal';
 import { useGetUsername } from '@/hooks/useGetUsername';
+import { Problem } from '@/types/problems';
 
 type Props = {
     roomId: string;
     idTitle: string;
+    setSuccess: (success: boolean) => void;
+    setSolved: (solved: boolean) => void;
+    problem: Problem;
 }
 
-const Playground = ({ roomId, idTitle }: Props) => {
+const Playground = ({ roomId, idTitle, setSuccess, setSolved, problem }: Props) => {
 
     const username = useGetUsername();
-    const [code, setCode] = useState<string>('// Your code here');
+    const [code, setCode] = useState<string>();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submittingUser, setSubmittingUser] = useState<string | null>(null);
+    // const [libProblem, setLibProblem] = useState<Problem | null>(null);
     const socket = useSocket();
     const { toast } = useToast();
 
     useEffect(() => {
-        if (socket) {
-            socket.on('codeChange', (newCode: string) => {
-                setCode(newCode);
-            });
 
-            socket.on('submissionStart', (username: string) => {
+        // const idTitles = Object.keys(problems); // Replace with actual logic to get idTitles
+
+        // const paths = idTitles.map((idTitle) => ({
+        //     params: { idTitle },
+        // }));
+
+        // console.log('paths: ', paths);
+
+        // // check if the idTitle is in the paths
+        // const isIdTitleInPaths = paths.some((path) => path.params.idTitle === idTitle);
+        // console.log('isIdTitleInPaths: ', isIdTitleInPaths);
+
+        // // get the problem from the problems object
+        // if (isIdTitleInPaths) {
+        //     const problem = problems[idTitle];
+        //     console.log('problem: ', problem);
+        //     setLibProblem(problem);
+        // }   
+
+
+
+        if (socket && problem) {
+            // Fetch the latest code when component mounts or page refreshes
+            // if (problem !== null) {
+                socket.emit('getLatestCode', { roomId, problem }, (response: { code: string }) => {
+                    setCode(response.code === '' ? problem.starterCode : response.code);
+                });
+            // }
+    
+            const handleCodeChange = (newCode: string) => {
+                setCode(newCode);
+            };
+    
+            const handleSubmissionStart = (username: string) => {
+                console.log("submissionStart on client", username);
                 setIsSubmitting(true);
                 setSubmittingUser(username);
-                // console.log("submissionStart", username);
-            });
-
-            socket.on('submissionResult', (result: { success: boolean, message: string }) => {
+            };
+    
+            const handleSubmissionResult = (result: { success: boolean, message: string }) => {
                 setIsSubmitting(false);
                 setSubmittingUser(null);
                 console.log("submissionResult", result);
+            };
+    
+            const handleSubmissionToast = (toastData: { message: string, type: string }) => {
+                console.log("submissionToast", toastData);
+                if (toastData.type === "success") {
+                    setSuccess(true);
+                    toast({
+                        title: toastData.type,
+                        description: toastData.message,
+                    });
+                    setSolved(true);
+                } else {
+                    toast({
+                        title: toastData.type,
+                        description: toastData.message,
+                    });
+                }
+            };
+    
+            socket.on('codeChange', handleCodeChange);
+            socket.on('submissionStart', handleSubmissionStart);
+            socket.on('submissionResult', handleSubmissionResult);
+            socket.on('submissionToast', handleSubmissionToast);
+    
+            // Re-join the room to ensure proper connection
+            socket.emit('joinRoom', { roomId, username }, (response: any) => {
+                if (response.success) {
+                    console.log('Reconnected to room:', roomId);
+                } else {
+                    console.error('Failed to reconnect to room:', response.message);
+                }
             });
+
+            return () => {
+                socket.off('codeChange', handleCodeChange);
+                socket.off('submissionStart', handleSubmissionStart);
+                socket.off('submissionResult', handleSubmissionResult);
+                socket.off('submissionToast', handleSubmissionToast);
+            };
         }
+    }, [socket, toast, setSuccess, setSolved, roomId, idTitle, problem]);
 
-        return () => {
-            if (socket) {
-                socket.off('codeChange');
-                socket.off('submissionStart');
-                socket.off('submissionResult');
-            }
-        };
-    }, [socket, toast]);
-
+    // this is to set the code to the starter code when the idTitle changes
     useEffect(() => {
-        setCode(problems[idTitle].starterCode);
+        if (idTitle && problems[idTitle]) {
+            setCode(problems[idTitle].starterCode);
+
+            // emit codeChange event
+            if (socket) {
+                socket.emit('codeChange', { roomId, code: problems[idTitle].starterCode });
+            }
+
+            
+        }
     }, [idTitle]);
 
     const handleCodeChange = (value: string) => {
@@ -87,27 +161,49 @@ const Playground = ({ roomId, idTitle }: Props) => {
 
                 if (typeof handler === 'function') {
                     const success = handler(cb);
+                    // 
                     if (success) {
+                        // emit submissionSuccess event
+                        if (socket) {
+                            socket.emit('submissionMessage', { roomId, message: "Congratulations, All tests passed!", type: "success" });
+                        }
                         toast({
                             title: "Success!",
                             description: "Congratulations, All tests passed!",
                         });
+                        setSuccess(true);
+
+                        // update the solved status in the database
+
+                        setSolved(true);
                     } else {
                         throw new Error("Some tests failed");
                     }
                 }
             } catch (error: any) {
                 if (error.message === "Some tests failed") {
+                    // emit submissionFailure event
+                    if (socket) {
+                        socket.emit('submissionMessage', { roomId, message: "Oops! One or more test cases failed", type: "error" });
+                    }
                     toast({
                         title: "Error",
                         description: "Oops! One or more test cases failed",
                     });
                 } else if (error.message.startsWith('AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:')) {
+                    // emit submissionFailure event
+                    if (socket) {
+                        socket.emit('submissionMessage', { roomId, message: "Oops! One or more test cases failed", type: "error" });
+                    }
                     toast({
                         title: "Error",
                         description: "Oops! One or more test cases failed",
                     });
                 } else {
+                    // emit submissionFailure event
+                    if (socket) {
+                        socket.emit('submissionMessage', { roomId, message: error.message, type: "error" });
+                    }
                     toast({
                         title: "Error",
                         description: error.message,
@@ -115,11 +211,29 @@ const Playground = ({ roomId, idTitle }: Props) => {
                 }
             }
 
-            if (socket) {
-                socket.emit('submissionResult', { roomId, success: false, message: "Some tests failed. Please try again." });
-            }
+            // if (socket) {
+            //     socket.emit('submissionResult', { roomId, success: false, message: "Some tests failed. Please try again.",  });
+            // }
         }, 3000);
     };
+
+    // if the
+    if (isSubmitting) {
+        setTimeout(() => {
+            setIsSubmitting(false);
+            setSubmittingUser(null);
+
+            // emit submissionToast event
+            // if (socket) {
+            //     socket.emit('submissionToast', { roomId, message: "Some tests failed. Please try again.", type: "error" });
+            // }
+
+
+            // if (socket) {
+            //     socket.emit('submissionResult', { roomId, success: false, message: "Some tests failed. Please try again." });
+            // }
+        }, 3000);
+    }
 
         // if (typeof handler === 'function') {
         //     const success = handler(cb);
@@ -145,6 +259,8 @@ const Playground = ({ roomId, idTitle }: Props) => {
         // }
     // };
 
+
+
     return (
         <div>
             Playground
@@ -162,7 +278,7 @@ const Playground = ({ roomId, idTitle }: Props) => {
                         onChange={handleCodeChange}
                     />
                 </div>
-                <div className='w-full px-5 overflow-auto'>
+                <div className='w-full px-5'>
                     {/* Bottom tabs */}
                     <div className="h-1/2 overflow-auto">
                         <Tabs defaultValue="testcase">

@@ -35,13 +35,13 @@ const ProblemDescription = ({roomId, idTitle, dbProblem, problem}: Props) => {
     };
 
     return (
-        <div className='border-red-200'>
-            <div className='flex justify-between'>
-                <h1>Room ID: {roomId}</h1>
-                <h2>Problem Title: {idTitle}</h2>
-            </div>
-            {/* Left side */}
-            <div className="overflow-auto border border-red-950">
+        // <div className=''>
+            // <div className='flex justify-between'>
+            //     <h1>Room ID: {roomId}</h1>
+            //     <h2>Problem Title: {idTitle}</h2>
+            // </div>
+            // Left side
+            <div className="flex px-0 py-4 h-[calc(100vh-130px)] overflow-y-auto border border-blue-500">
                 <Tabs defaultValue="description">
                     <TabsList>
                     <TabsTrigger value="description">Description</TabsTrigger>
@@ -62,7 +62,7 @@ const ProblemDescription = ({roomId, idTitle, dbProblem, problem}: Props) => {
                     <TabsContent value="submissions" className="p-4"><Submissions/></TabsContent>
                 </Tabs>
             </div>
-        </div>
+        // </div> 
     )
 }
 

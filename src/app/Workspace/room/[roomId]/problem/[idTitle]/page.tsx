@@ -13,6 +13,7 @@ import { problems } from '@/lib/problems';
 import Topbar from '@/components/topbar/Topbar';
 import { useGetUsername } from '@/hooks/useGetUsername';
 import { useSocket } from '@/components/SocketProvider';
+import Confetti from "react-confetti";
 
 interface WorkspaceProps {
     params: {
@@ -37,23 +38,40 @@ const Workspace =  ({ params }: WorkspaceProps) => {
 
     useEffect(() => {
 
-        // if (socket) {
-        //     socket.emit('isUserInRoomId', { roomId, username }, (response: any) => {
-        //         if (response.success) {
-        //             console.log('response.isInRoom: ', response.isInRoom);
-        //             // setIsInRoom(response.isInRoom);
-        //         } else {
-        //             if (!response.isInRoom) {
-        //                 router.push('/');
-        //             }
-        //         }
-        //     });
-        // }
+        const reconnectToRoom = () => {
+            const storedRoomInfo = localStorage.getItem('roomInfo');
+            if (storedRoomInfo) {
+                const { roomId: storedRoomId, username: storedUsername } = JSON.parse(storedRoomInfo);
+                if (storedRoomId === roomId && storedUsername === username) {
+                    socket?.emit('joinRoom', { roomId, username }, (response: any) => {
+                        if (response.success) {
+                            console.log('Reconnected to room:', roomId);
+                        } else {
+                            console.error('Failed to reconnect to room:', response.message);
+                        }
+                    });
+                }
+            }
+        };
+
+        const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+            event.preventDefault();
+            router.push('/');
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
 
         console.log('Workspace - roomId: ', roomId);
         console.log('Workspace - idTitle: ', idTitle);
 
+        if (socket) {
+            reconnectToRoom();
 
+            socket.on('problemChanged', ({ problemId }) => {
+                router.push(`/workspace/room/${roomId}/problem/${problemId}`);
+            });
+        }
+        
         // fetchProblemByIdTitle()
         fetchProblemByIdTitle().then(setDbProblem);
 
@@ -96,6 +114,7 @@ const Workspace =  ({ params }: WorkspaceProps) => {
         }
     
         return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
             if (socket) {
                 socket.off('problemChanged');
             }
@@ -118,6 +137,7 @@ const Workspace =  ({ params }: WorkspaceProps) => {
             console.log('Leaving room: ', roomId);
             socket.emit('leaveRoom', { roomId, username }, (response: any) => {
                 if (response.success) {
+                    localStorage.removeItem('roomInfo');
                     router.push('/'); // Redirect to homepage after leaving
                 } else {
                     console.error(response.message);
@@ -131,25 +151,27 @@ const Workspace =  ({ params }: WorkspaceProps) => {
     }
 
     return (
-        <>
+        <div className='h-full border border-orange-500'>
             <Topbar/>
             <h1 className="text-center text-2xl font-bold mb-4">Room ID: {roomId} | Problem ID: {idTitle} | Host: {host}</h1>
 
             <button 
                 onClick={handleLeaveRoom} 
-                className="bg-red-500 text-white px-4 py-2 rounded mb-4"
+                className="bg-red-500 px-4 py-2 rounded mb-4"
             >
                 Leave Room
             </button>
 
-            <Split className="split" minSize={0}>
+            <Split className="split border border-black h-[calc(100vh-130px)]" minSize={0}>
                 <ProblemDescription roomId={roomId} idTitle={idTitle} dbProblem={dbProblem as DBProblem} problem={problem as Problem} />  {/* Problem description */}
                 
                 <div className='w-1/2'>
-                    <Playground roomId={roomId} idTitle={idTitle} /> {/* Coding playground */}
+                    <Playground roomId={roomId} idTitle={idTitle} setSuccess={setSuccess} setSolved={setSolved} problem={problem as Problem}/>
+                    {/* <Playground roomId={roomId} idTitle={idTitle} setSuccess={setSuccess} setSolved={setSolved}/> */}
+                    {success && <Confetti gravity={0.3} tweenDuration={4000} width={width - 1} height={height - 1} />}
                 </div>
             </Split>
-        </>
+        </div>
     );
 }
 

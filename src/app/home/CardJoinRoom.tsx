@@ -26,8 +26,13 @@ const CardJoinRoom = ({socket, username}: {socket: Socket | null, username: stri
 
                                 // get the problemId from the selectedProblem
                                 const problemId = joinResponse.selectedProblem;
+                                console.log("problemId: ", problemId);
                                 console.log("User joining room: ", username);
                                 console.log("Joined room: ", roomId);   
+
+                                // store room information in local storage
+                                localStorage.setItem('roomInfo', JSON.stringify({ roomId, username }));
+
                                 // push to the workspace page where the room is
                                 router.push(`/workspace/room/${roomId}/problem/${problemId}`);
                             } else {

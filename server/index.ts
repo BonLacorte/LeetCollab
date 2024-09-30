@@ -46,6 +46,7 @@ type Room = {
     users: string[] | null;
     selectedProblem: DBProblem | null;
     host: string;
+    code: string;
 };
 
 
@@ -79,6 +80,7 @@ io.on('connection', (socket) => {
             users: [username],
             selectedProblem,
             host: username,
+            code: '',
         });
 
         const room = rooms.get(roomId);
@@ -126,6 +128,14 @@ io.on('connection', (socket) => {
             console.log("joinRoom - User joined the room: ", roomId);
             
             io.to(roomId).emit('userJoined', { roomId, username });
+
+            // check for 'null' in users and remove them
+            if (room?.users) {
+                room.users = room.users.filter(user => user !== null);
+            }
+
+            console.log("joinRoom - Users in the room after filter: ", room?.users);
+
             callback({ success: true, selectedProblem: room?.selectedProblem?.idTitle, host: room?.host });
             // io.to(roomId).emit('userJoined', { roomId, username });
         } else {
@@ -138,10 +148,10 @@ io.on('connection', (socket) => {
     // Get host
     socket.on('getHost', ({ roomId }, callback) => {
         console.log("getHost called")
-        console.log("getHost - Rooms: ", rooms)
-        console.log('getHost - Getting host: ', roomId);
+        // console.log("getHost - Rooms: ", rooms)
+        // console.log('getHost - Getting host: ', roomId);
         const room = rooms.get(roomId);
-        console.log("getHost - Host: ", room?.host);
+        // console.log("getHost - Host: ", room?.host);
         callback({ success: true, host: room?.host });
     });
 
@@ -283,6 +293,14 @@ io.on('connection', (socket) => {
         //     room.code = code;
         // }
         socket.to(roomId).emit('codeChange', code);
+
+        const room = rooms.get(roomId);
+        if (room) {
+            room.code = code;
+        }
+
+        // reflect the code change to all users in the room
+        io.to(roomId).emit('codeChange', code);
     });
 
     // Handle submission
@@ -295,7 +313,38 @@ io.on('connection', (socket) => {
     // Handle submission result
     socket.on('submissionResult', ({ roomId, success, message }) => {
         if (rooms.has(roomId)) {
-            io.to(roomId).emit('submissionResult', { success, message });
+            if (success) {
+                io.to(roomId).emit('submissionSuccess', { message });
+            } else {
+                io.to(roomId).emit('submissionFailure', { message });
+            }
+        }
+    });
+
+    // Handle get latest code
+    socket.on('getLatestCode', ({ roomId, problem }, callback) => {
+        const room = rooms.get(roomId);
+        console.log("getLatestCode - RoomId: ", roomId);
+        console.log("getLatestCode - Problem: ", problem);
+        if (room) {
+            if (room.code) {
+                callback({ code: room.code });
+            } else {
+                // get the starter code from the problems object
+                // const starterCode = problem?.starterCode || '// Your code hereeeeeee';
+                // room.code = starterCode;
+                callback({ code: '' });
+            }
+        } else {
+
+            callback({ code: '// Your code here' });
+        }
+    });
+
+    // Handle submission message
+    socket.on('submissionMessage', ({ roomId, message, type }) => {
+        if (rooms.has(roomId)) {
+            io.to(roomId).emit('submissionToast', { message, type });
         }
     });
 

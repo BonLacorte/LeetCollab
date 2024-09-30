@@ -27,8 +27,8 @@ const Description: React.FC<DescriptionProps> = ({
     const [updating, setUpdating] = useState(false);
 
     return (
-        <div className='bg-dark-layer-1'>
-            <div className='flex px-0 py-4 h-[calc(100vh-94px)] border border-red-500 overflow-y-auto'>
+        <div className=''>
+            <div className='flex px-0 py-4 h-[calc(100vh-109.5px)] overflow-y-auto'>
                 <div className='px-5'>
                     {/* Problem heading */}
                     <div className='w-full'>
