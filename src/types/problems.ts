@@ -29,3 +29,9 @@ export type DBProblem = {
     createdAt: string;
     updatedAt: string;
 }
+
+export type Message = {
+    sender: string;
+    content: string;
+    timestamp: Date;
+};

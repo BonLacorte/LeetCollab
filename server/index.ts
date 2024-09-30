@@ -7,6 +7,7 @@ import morgan from 'morgan';
 import http from 'http';
 import { Server } from 'socket.io';
 import { DBProblem } from '@/types/problems';
+import { Message } from 'postcss';
 // import userRoutes from './routes/userRoutes';
 // import problemRoutes from './routes/problemRoutes';
 
@@ -47,6 +48,7 @@ type Room = {
     selectedProblem: DBProblem | null;
     host: string;
     code: string;
+    messages: Message[];
 };
 
 
@@ -81,6 +83,7 @@ io.on('connection', (socket) => {
             selectedProblem,
             host: username,
             code: '',
+            messages: [],
         });
 
         const room = rooms.get(roomId);
@@ -120,6 +123,11 @@ io.on('connection', (socket) => {
         if (rooms.has(roomId)) {
             socket.join(roomId);
             const room = rooms.get(roomId);
+
+            if (room) {
+                socket.emit('chatHistory', room.messages);
+                io.to(roomId).emit('updateMembers', room.users);
+            }
             
             // append the user to the room
             room?.users?.push(username);
@@ -134,6 +142,13 @@ io.on('connection', (socket) => {
                 room.users = room.users.filter(user => user !== null);
             }
 
+            // check for duplicate users in the room and remove them
+            if (room?.users) {
+                room.users = room.users.filter((user, index, self) =>
+                    index === self.indexOf(user)
+                );
+            }
+            
             console.log("joinRoom - Users in the room after filter: ", room?.users);
 
             callback({ success: true, selectedProblem: room?.selectedProblem?.idTitle, host: room?.host });
@@ -253,6 +268,7 @@ io.on('connection', (socket) => {
         console.log("leaveRoom - Socket ID: ", socket.id);
         if (room && room.users) {
             room.users = room.users.filter(user => user !== username);
+            io.to(roomId).emit('updateMembers', room.users);
         }
         console.log("leaveRoom - After deleting: Users in the room: ", room?.users);
 
@@ -341,10 +357,39 @@ io.on('connection', (socket) => {
         }
     });
 
-    // Handle submission message
+    // Handle submission message after submission of the code
     socket.on('submissionMessage', ({ roomId, message, type }) => {
         if (rooms.has(roomId)) {
             io.to(roomId).emit('submissionToast', { message, type });
+        }
+    });
+
+    // Handle chat message
+    socket.on('sendMessage', ({ roomId, message }) => {
+        const room = rooms.get(roomId);
+        if (room) {
+            room.messages.push(message);
+            io.to(roomId).emit('chatMessage', message);
+        }
+    });
+
+    // Add a new handler for fetching chat history
+    socket.on('getChatHistory', ({ roomId }, callback) => {
+        const room = rooms.get(roomId);
+        if (room) {
+            callback(room.messages);
+        } else {
+            callback([]);
+        }
+    });
+
+    // Handle for getting the members of the room
+    socket.on('getRoomMembers', ({ roomId }, callback) => {
+        const room = rooms.get(roomId);
+        if (room) {
+            callback(room.users);
+        } else {
+            callback([]);
         }
     });
 

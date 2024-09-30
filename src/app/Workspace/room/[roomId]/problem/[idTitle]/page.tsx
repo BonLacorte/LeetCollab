@@ -162,7 +162,7 @@ const Workspace =  ({ params }: WorkspaceProps) => {
                 Leave Room
             </button>
 
-            <Split className="split border border-black h-[calc(100vh-130px)]" minSize={0}>
+            <Split className="split  border-black h-[calc(100vh-130px)]" minSize={0}>
                 <ProblemDescription roomId={roomId} idTitle={idTitle} dbProblem={dbProblem as DBProblem} problem={problem as Problem} />  {/* Problem description */}
                 
                 <div className='w-1/2'>

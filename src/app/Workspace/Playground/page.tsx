@@ -16,6 +16,8 @@ import { useToast } from '@/hooks/use-toast';
 import LoadingSubmitModal from './LoadingSubmitModal';
 import { useGetUsername } from '@/hooks/useGetUsername';
 import { Problem } from '@/types/problems';
+import Chat from './Chat/page';
+import Members from './Members/page';
 
 type Props = {
     roomId: string;
@@ -210,10 +212,6 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, problem }: Props) 
                     });
                 }
             }
-
-            // if (socket) {
-            //     socket.emit('submissionResult', { roomId, success: false, message: "Some tests failed. Please try again.",  });
-            // }
         }, 3000);
     };
 
@@ -222,53 +220,17 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, problem }: Props) 
         setTimeout(() => {
             setIsSubmitting(false);
             setSubmittingUser(null);
-
-            // emit submissionToast event
-            // if (socket) {
-            //     socket.emit('submissionToast', { roomId, message: "Some tests failed. Please try again.", type: "error" });
-            // }
-
-
-            // if (socket) {
-            //     socket.emit('submissionResult', { roomId, success: false, message: "Some tests failed. Please try again." });
-            // }
         }, 3000);
     }
 
-        // if (typeof handler === 'function') {
-        //     const success = handler(cb);
-        //     if (success) {
-        //         console.log('Accepted');
-        //         if (socket) {
-        //             socket.emit('submissionResult', { roomId, success: true, message: "Congratulations, All tests passed!" });
-        //             toast({
-        //                 title: "Success!",
-        //                 description: "Congratulations, All tests passed!",
-        //             });
-        //         }
-        //     } else {
-        //         console.log('Wrong Answer');
-        //         if (socket) {
-        //             socket.emit('submissionResult', { roomId, success: false, message: "Some tests failed. Please try again." });
-        //             toast({
-        //                 title: "Error",
-        //                 description: "Some tests failed. Please try again.",
-        //             });
-        //         }
-        //     }
-        // }
-    // };
-
-
-
     return (
-        <div>
-            Playground
+        <div className='border'>
             <PlaygroundHeader />
-            <Split className='h-[calc(100vh-94px)]' direction='vertical' sizes={[60,40]} minSize={60}>
+            {/* <Split className='h-[calc(100vh-94px)]' direction='vertical' sizes={[60,40]} minSize={60}> */}
+            {/* <div className='flex flex-col h-[calc(100vh-115px)]'> */}
+            <div className='flex flex-col border h-full'>
 
-
-                <div className='w-full overflow-auto'>
+                <div className='w-full h-[calc(35vh)] border overflow-auto'>
                     <CodeMirror 
                         // value={boilerplate}
                         value={code}
@@ -278,39 +240,44 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, problem }: Props) 
                         onChange={handleCodeChange}
                     />
                 </div>
-                <div className='w-full px-5'>
+                <div className='w-full h-[calc(35vh)] '>
                     {/* Bottom tabs */}
-                    <div className="h-1/2 overflow-auto">
-                        <Tabs defaultValue="testcase">
-                        <TabsList>
-                            <TabsTrigger value="testcase">Testcase</TabsTrigger>
-                            <TabsTrigger value="result">Result</TabsTrigger>
-                            <TabsTrigger value="whiteboard">Whiteboard</TabsTrigger>
-                            <TabsTrigger value="chat">Chat</TabsTrigger>
-                            <TabsTrigger value="users">Users</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="testcase" className="p-4">
-                            {/* <pre className="p-2 rounded">
-                            <code>
-                                {`s = "abc"
-                                    t = "ahbgdc"`}
-                            </code>
-                            </pre> */}
-                            <TestCases problem={problems[idTitle]} />
-                        </TabsContent>
-                        <TabsContent value="result">Test result content</TabsContent>
-                        <TabsContent value="whiteboard">Whiteboard content</TabsContent>
-                        <TabsContent value="chat">Chat messages content</TabsContent>
-                        <TabsContent value="users">
-                            <div className="flex items-center space-x-2 p-2">
-                            <UsersIcon className="w-4 h-4" />
-                            <span>User1, User2, User3</span>
+                    <div className="w-full h-full overflow-auto">
+                        <div className='flex flex-row w-full h-full'>
+                            <div className='w-3/5 border '>
+                                <Tabs defaultValue="testcase">
+                                    <TabsList>
+                                        <TabsTrigger value="testcase">Testcase</TabsTrigger>
+                                        <TabsTrigger value="result">Result</TabsTrigger>
+                                        <TabsTrigger value="whiteboard">Whiteboard</TabsTrigger>
+                                        
+                                    </TabsList>
+                                    <TabsContent value="testcase" className="p-4">
+                                        {/* <TestCases problem={problems[idTitle]} /> */}
+                                    </TabsContent>
+                                    <TabsContent value="result">Test result content</TabsContent>
+                                    <TabsContent value="whiteboard">Whiteboard content</TabsContent>
+                                </Tabs>
                             </div>
-                        </TabsContent>
-                        </Tabs>
+                            <div className='w-2/5 border'>
+                                <Tabs defaultValue="chat">
+                                    <TabsList>
+                                        <TabsTrigger value="chat">Chat</TabsTrigger>
+                                        <TabsTrigger value="members">Members</TabsTrigger>
+                                    </TabsList>
+                                    <TabsContent value="chat">
+                                        <Chat roomId={roomId} />
+                                    </TabsContent>
+                                    <TabsContent value="members">
+                                        <Members roomId={roomId} />
+                                    </TabsContent>
+                                </Tabs>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </Split>
+            </div>
+            {/* </Split> */}
 
             <PlaygroundFooter handleSubmit={handleSubmit} />
             {isSubmitting && <LoadingSubmitModal username={submittingUser} />}

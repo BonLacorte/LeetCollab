@@ -41,7 +41,7 @@ const ProblemDescription = ({roomId, idTitle, dbProblem, problem}: Props) => {
             //     <h2>Problem Title: {idTitle}</h2>
             // </div>
             // Left side
-            <div className="flex px-0 py-4 h-[calc(100vh-130px)] overflow-y-auto border border-blue-500">
+            <div className="flex px-0 py-4 h-[calc(100vh-130px)] overflow-y-auto border">
                 <Tabs defaultValue="description">
                     <TabsList>
                     <TabsTrigger value="description">Description</TabsTrigger>

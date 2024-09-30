@@ -22,7 +22,7 @@ const TestCases = ({ problem }: TestCasesProps) => {
                     <div className='flex flex-wrap items-center gap-y-4'>
                         <div
                             className={`font-medium items-center  relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
-                            ${activeTestCaseId === index ? "text-white" : "text-gray-500"}
+                            ${activeTestCaseId === index ? "text-black" : "text-gray-500"}
                         `}
                         >
                             Case {index + 1}
