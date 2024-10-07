@@ -13,20 +13,4 @@ export const GET = async (req: Request) => {
     } catch (error) {
         return NextResponse.json({ error: "Failed to fetch problems" }, { status: 500 });
     }
-}
-
-
-// // POST a new problem
-// export const POST = async (req: Request) => {
-//     const { title, description, difficulty, category } = req.body;
-//     const problem = await db.problem.create({
-//         data: {
-//             title,
-//             description,
-//             difficulty,
-//             category
-//         }
-//     });
-//     return NextResponse.json({ problem });
-// }
-        
+}      

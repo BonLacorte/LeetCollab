@@ -35,3 +35,11 @@ export type Message = {
     content: string;
     timestamp: Date;
 };
+
+export type TestCase = {
+    case: number;
+    passed: boolean;
+    input: string;
+    expectedOutput: string;
+    actualOutput: string;
+}

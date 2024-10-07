@@ -14,6 +14,7 @@ const userSchema = z.object({
     confirmPassword: z.string().min(6, { message: "Password must be at least 6 characters long" }),
 });
 
+// Create a new user
 export async function POST(req: Request) {
     try {
         const body = await req.json();
@@ -61,6 +62,7 @@ export async function POST(req: Request) {
     }
 }
 
+// Get the user data
 export const GET = async (req: Request) => {
     const session = await getServerSession(authOptions)
 

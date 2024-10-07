@@ -26,12 +26,12 @@ const ProblemDescription = ({roomId, idTitle, dbProblem, problem}: Props) => {
 	// 	return { userDoc, problemDoc, userRef, problemRef };
 	// };
 
+    
+
     const handleLike = async () => {
-        // Implement like functionality
     };
 
     const handleStar = async () => {
-        // Implement star functionality
     };
 
     return (
@@ -55,6 +55,7 @@ const ProblemDescription = ({roomId, idTitle, dbProblem, problem}: Props) => {
                             problem={problem}
                             handleLike={handleLike}
                             handleStar={handleStar}
+                            // isSolved={isSolved}
                         />
 
                     </TabsContent>

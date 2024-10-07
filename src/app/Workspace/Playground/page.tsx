@@ -15,19 +15,24 @@ import TestCases from './TestCases/page';
 import { useToast } from '@/hooks/use-toast';
 import LoadingSubmitModal from './LoadingSubmitModal';
 import { useGetUsername } from '@/hooks/useGetUsername';
-import { Problem } from '@/types/problems';
+import { DBProblem, Problem, TestCase } from '@/types/problems';
 import Chat from './Chat/page';
 import Members from './Members/page';
+import TestResults from './TestResults/page';
+import { useSession } from 'next-auth/react';
+import { useAppDispatch, useAppSelector } from '@/app/redux';
+import Whiteboard from './Whiteboard/page';
 
 type Props = {
     roomId: string;
     idTitle: string;
     setSuccess: (success: boolean) => void;
     setSolved: (solved: boolean) => void;
+    dbProblem: DBProblem;
     problem: Problem;
 }
 
-const Playground = ({ roomId, idTitle, setSuccess, setSolved, problem }: Props) => {
+const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem }: Props) => {
 
     const username = useGetUsername();
     const [code, setCode] = useState<string>();
@@ -37,36 +42,28 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, problem }: Props) 
     const socket = useSocket();
     const { toast } = useToast();
 
+    const [testResults, setTestResults] = useState<TestCase[] | null>(null);
+    const [runtime, setRuntime] = useState<number | null>(null);
+
+    const [activeTab, setActiveTab] = useState<string>("testcase");
+
+    const dispatch = useAppDispatch();
+
+    const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+
+    // const toggleDarkMode = () => {
+    //     dispatch(setIsDarkMode(!isDarkMode));
+    // }
+    
     useEffect(() => {
 
-        // const idTitles = Object.keys(problems); // Replace with actual logic to get idTitles
-
-        // const paths = idTitles.map((idTitle) => ({
-        //     params: { idTitle },
-        // }));
-
-        // console.log('paths: ', paths);
-
-        // // check if the idTitle is in the paths
-        // const isIdTitleInPaths = paths.some((path) => path.params.idTitle === idTitle);
-        // console.log('isIdTitleInPaths: ', isIdTitleInPaths);
-
-        // // get the problem from the problems object
-        // if (isIdTitleInPaths) {
-        //     const problem = problems[idTitle];
-        //     console.log('problem: ', problem);
-        //     setLibProblem(problem);
-        // }   
-
-
-
         if (socket && problem) {
+
             // Fetch the latest code when component mounts or page refreshes
-            // if (problem !== null) {
                 socket.emit('getLatestCode', { roomId, problem }, (response: { code: string }) => {
                     setCode(response.code === '' ? problem.starterCode : response.code);
                 });
-            // }
+
     
             const handleCodeChange = (newCode: string) => {
                 setCode(newCode);
@@ -133,8 +130,6 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, problem }: Props) 
             if (socket) {
                 socket.emit('codeChange', { roomId, code: problems[idTitle].starterCode });
             }
-
-            
         }
     }, [idTitle]);
 
@@ -142,6 +137,65 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, problem }: Props) 
         setCode(value);
         if (socket) {
             socket.emit('codeChange', { roomId, code: value });
+        }
+    };
+
+    const handleRun = () => {
+        setIsSubmitting(true);
+        setSubmittingUser(username);
+
+        // setActiveTab("result");
+
+        const startTime = performance.now();
+        
+        try {
+            const cb = new Function(`return ${code}`)();
+            const testCases = problems[idTitle].examples;
+            // console.log('testCases: ', testCases);
+            const results = testCases.map((testCase, index) => {
+                // Parse input string to extract nums and target
+                const inputMatch = testCase.inputText.match(/nums = (\[.*?\]),\s*target = (\d+)/);
+                if (!inputMatch) {
+                    throw new Error(`Invalid input format for test case ${index + 1}`);
+                }
+                const nums = JSON.parse(inputMatch[1]);
+                const target = parseInt(inputMatch[2]);
+    
+                const expectedOutput = JSON.parse(testCase.outputText);
+                const actualOutput = cb(nums, target);
+
+                // console.log('actualOutput: ', actualOutput);
+                // console.log('expectedOutput: ', expectedOutput);
+
+                // console.log('passedd: ', JSON.stringify(actualOutput) === JSON.stringify(expectedOutput));
+
+                return {
+                    case: index + 1,
+                    passed: JSON.stringify(actualOutput) === JSON.stringify(expectedOutput),
+                    input: testCase.inputText,
+                    expectedOutput: testCase.outputText,
+                    actualOutput: JSON.stringify(actualOutput)
+                };
+            });
+    
+            const endTime = performance.now();
+            setRuntime(Math.round(endTime - startTime));
+            console.log('results: ', results);
+            setTestResults(results);
+
+            setActiveTab("result");
+            // socket.emit('codeChange', { roomId, code: code });
+        } catch (error: any) {
+            console.error('Error in handleRun:', error);
+            
+            setActiveTab("result");
+            toast({
+                title: "Error",
+                description: error.message,
+            });
+        } finally {
+            setIsSubmitting(false);
+            setSubmittingUser(null);
         }
     };
 
@@ -160,6 +214,7 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, problem }: Props) 
             try {
                 const cb = new Function(`return ${code}`)();
                 const handler = problems[idTitle].handlerFunction;
+                const { data: session } = useSession();
 
                 if (typeof handler === 'function') {
                     const success = handler(cb);
@@ -176,7 +231,26 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, problem }: Props) 
                         setSuccess(true);
 
                         // update the solved status in the database
-
+                        const updateUserProblemSolved = async () => {
+                            const response = await fetch(`/api/problem/${idTitle}/solved`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+                                    problemId: dbProblem?.problemId,
+                                    userId: session?.user.id,
+                                }),
+                            });
+                            const data = await response.json();
+                            if (data.success) {
+                                console.log("Problem marked as solved");
+                                setSolved(true);
+                            } else {
+                                console.error("Failed to mark problem as solved:", data.error);
+                            }
+                        }
+                        updateUserProblemSolved();
                         setSolved(true);
                     } else {
                         throw new Error("Some tests failed");
@@ -234,7 +308,7 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, problem }: Props) 
                     <CodeMirror 
                         // value={boilerplate}
                         value={code}
-                        theme={vscodeLight}
+                        theme={isDarkMode ? vscodeDark : vscodeLight}
                         extensions={[javascript()]}
                         // style={{fontSize: settings.fontSize}}
                         onChange={handleCodeChange}
@@ -245,7 +319,7 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, problem }: Props) 
                     <div className="w-full h-full overflow-auto">
                         <div className='flex flex-row w-full h-full'>
                             <div className='w-3/5 border '>
-                                <Tabs defaultValue="testcase">
+                                <Tabs defaultValue="testcase" value={activeTab} onValueChange={setActiveTab}>
                                     <TabsList>
                                         <TabsTrigger value="testcase">Testcase</TabsTrigger>
                                         <TabsTrigger value="result">Result</TabsTrigger>
@@ -253,10 +327,14 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, problem }: Props) 
                                         
                                     </TabsList>
                                     <TabsContent value="testcase" className="p-4">
-                                        {/* <TestCases problem={problems[idTitle]} /> */}
+                                        <TestCases problem={problems[idTitle]} />
                                     </TabsContent>
-                                    <TabsContent value="result">Test result content</TabsContent>
-                                    <TabsContent value="whiteboard">Whiteboard content</TabsContent>
+                                    <TabsContent value="result" className='overflow-auto h-[30vh]'>
+                                        <TestResults results={testResults} runtime={runtime} />
+                                    </TabsContent>
+                                    <TabsContent value="whiteboard" className='h-[30vh]'>
+                                        <Whiteboard roomId={roomId} />
+                                    </TabsContent>
                                 </Tabs>
                             </div>
                             <div className='w-2/5 border'>
@@ -279,7 +357,7 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, problem }: Props) 
             </div>
             {/* </Split> */}
 
-            <PlaygroundFooter handleSubmit={handleSubmit} />
+            <PlaygroundFooter handleSubmit={handleSubmit} handleRun={handleRun} />
             {isSubmitting && <LoadingSubmitModal username={submittingUser} />}
 
             {/* <Split className='h-[calc(100vh-94px)]' direction='vertical' sizes={[60,40]} minSize={60}> */}

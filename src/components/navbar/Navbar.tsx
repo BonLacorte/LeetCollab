@@ -6,9 +6,18 @@ import React from 'react'
 import UserAccountNav from '@/components/navbar/UserAccountNav';
 import { useSession } from 'next-auth/react';
 import { useGetUsername } from '@/hooks/useGetUsername';
+import { useAppDispatch, useAppSelector } from '@/app/redux';
+import { setIsDarkMode } from '@/app/state';
 
 const Navbar = () => {
     const username = useGetUsername();
+    const dispatch = useAppDispatch();
+
+    const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+
+    const toggleDarkMode = () => {
+        dispatch(setIsDarkMode(!isDarkMode));
+    }
 
     return (
         <div className='flex justify-between items-center w-full mb-7'>
@@ -31,8 +40,8 @@ const Navbar = () => {
             <div className="flex justify-between items-center gap-5">
                 <div className="hidden md:flex justify-between items-center gap-5">
                     <div>
-                        <Sun className="cursor-pointer text-gray-500" size={24} />
-                        {/* <button 
+                        {/* <Sun className="cursor-pointer text-gray-500" size={24} /> */}
+                        <button 
                             onClick={toggleDarkMode}
                         >
                             {isDarkMode ? (
@@ -40,7 +49,7 @@ const Navbar = () => {
                             ) : (
                                 <Moon className="cursor-pointer text-gray-500" size={24} />
                             )}
-                        </button> */}
+                        </button>
                     </div>
                     
                     <hr className="w-0 h-7 border border-solid border-l border-gray-300 mx-3" />

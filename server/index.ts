@@ -49,6 +49,7 @@ type Room = {
     host: string;
     code: string;
     messages: Message[];
+    whiteboard: any[];
 };
 
 
@@ -84,6 +85,7 @@ io.on('connection', (socket) => {
             host: username,
             code: '',
             messages: [],
+            whiteboard: []
         });
 
         const room = rooms.get(roomId);
@@ -380,6 +382,43 @@ io.on('connection', (socket) => {
             callback(room.messages);
         } else {
             callback([]);
+        }
+    });
+
+    // Handle drawing on the whiteboard
+    socket.on('draw', ({ roomId, x, y, color, size, tool, isNewStroke }) => {
+        const room = rooms.get(roomId);
+        if (room) {
+            room.whiteboard.push({ x, y, color, size, tool, isNewStroke });
+            socket.to(roomId).emit('draw', { x, y, color, size, tool, isNewStroke });
+        }
+    });
+    
+    // Handle clear canvas
+    socket.on('clearCanvas', ({ roomId }) => {
+        const room = rooms.get(roomId);
+        if (room) {
+            room.whiteboard = [];
+            io.to(roomId).emit('clearCanvas');
+            io.to(roomId).emit('whiteboardStateUpdated', []);
+        }
+    });
+
+    // Handle get whiteboard
+    socket.on('getWhiteboardState', ({ roomId }, callback) => {
+        const room = rooms.get(roomId);
+        if (room) {
+            callback(room.whiteboard);
+        } else {
+            callback([]);
+        }
+    });
+
+    // Handle save whiteboard state
+    socket.on('saveWhiteboardState', ({ roomId, state }) => {
+        const room = rooms.get(roomId);
+        if (room) {
+            room.whiteboard = state;
         }
     });
 

@@ -5,6 +5,8 @@ import LeetCloneWrapper from "@/app/LeetCloneWrapper";
 import { Toaster } from "@/components/ui/toaster";
 import Provider from "@/components/Provider";
 import { SocketProvider } from '@/components/SocketProvider';
+// import { Provider } from 'react-redux';
+// import { store } from "@/redux/store";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

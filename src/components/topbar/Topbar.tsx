@@ -10,6 +10,9 @@ import { problems } from '@/lib/problems'; // Adjust the import path as needed
 import { useSocket } from '@/components/SocketProvider';
 import { useGetUsername } from '@/hooks/useGetUsername';
 import UserAccountNav from '../navbar/UserAccountNav';
+import { useAppDispatch, useAppSelector } from '@/app/redux';
+import { setIsDarkMode } from '@/app/state';
+import { Moon, Sun } from 'lucide-react';
 
 const Topbar = () => {
     const username = useGetUsername();
@@ -20,6 +23,12 @@ const Topbar = () => {
     const [idTitle, setIdTitle] = useState<string | null>(null);
 
     const isWorkspacePage = pathname?.startsWith('/workspace/room/');
+    
+    const dispatch = useAppDispatch();
+    const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+    const toggleDarkMode = () => {
+        dispatch(setIsDarkMode(!isDarkMode));
+    }
 
     const socket = useSocket();
     const router = useRouter();
@@ -114,17 +123,31 @@ const Topbar = () => {
                 )}
 
                 {/* RIGHT SIDE */}
-                <div className='flex items-center space-x-4 flex-1 justify-end'>
-                    {/* Add your existing navbar items here */}
-                    {username ? (
-                        <UserAccountNav user={{ name: username }} />
-                    ) : (
-                        <Link href="/sign-in">
-                            <button className='bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50'>
-                                Sign In
-                            </button>
-                        </Link>
-                    )}
+                <div className="flex justify-between items-center gap-5">
+                    <div>
+                        {/* <Sun className="cursor-pointer text-gray-500" size={24} /> */}
+                        <button 
+                            onClick={toggleDarkMode}
+                        >
+                            {isDarkMode ? (
+                                <Sun className="cursor-pointer text-gray-500" size={24} />
+                            ) : (
+                                <Moon className="cursor-pointer text-gray-500" size={24} />
+                            )}
+                        </button>
+                    </div>
+                    <div className='flex items-center space-x-4 flex-1 justify-end'>
+                        {/* Add your existing navbar items here */}
+                        {username ? (
+                            <UserAccountNav user={{ name: username }} />
+                        ) : (
+                            <Link href="/sign-in">
+                                <button className='bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50'>
+                                    Sign In
+                                </button>
+                            </Link>
+                        )}
+                    </div>
                 </div>
             </div>
         </nav>

@@ -15,11 +15,9 @@ type Props = {
     isOpen: boolean;
     onClose: () => void;
     onConfirm: () => void;
-    roomPassword: string;
-    setRoomPassword: (password: string) => void;
 };
 
-const ConfirmationModal: React.FC<Props> = ({ isOpen, onClose, onConfirm, roomPassword, setRoomPassword }) => {
+const ConfirmationModal: React.FC<Props> = ({ isOpen, onClose, onConfirm }) => {
     return (
         <AlertDialog open={isOpen} onOpenChange={onClose}>
             <AlertDialogContent>

@@ -14,6 +14,7 @@ import Navbar from "@/components/navbar/Navbar";
 import { useSocket } from "@/components/SocketProvider";
 import { useGetUsername } from "@/hooks/useGetUsername";
 import { Problem } from "@prisma/client";
+import React from "react";
 
 const Homepage = () => {
 
