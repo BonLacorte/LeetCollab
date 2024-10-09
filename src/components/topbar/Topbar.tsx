@@ -70,10 +70,10 @@ const Topbar = () => {
             
             // Emit socket event to change problem for all users in the room
             console.log("changeProblem called");
-            console.log("changeProblem - roomId: ", roomId);
-            console.log('changeProblem - problemId: ', nextProblem.id);
-            console.log('changeProblem - selectedProblem: ', nextProblem);
-            socket?.emit('changeProblem', { roomId, problemId: nextProblem.id, selectedProblem: nextProblem }, (response: any) => {
+            // console.log("changeProblem - roomId: ", roomId);
+            // console.log('changeProblem - problemId: ', nextProblem.id);
+            // console.log('changeProblem - selectedProblem: ', nextProblem);
+            socket?.emit('changeProblem', { roomId, problemId: nextProblem.id, selectedProblem: nextProblem, starterCode: nextProblem.starterCode }, (response: any) => {
                 if (response.success) {
                     // Update local state
                     setCurrentProblem(nextProblem);

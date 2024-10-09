@@ -64,6 +64,20 @@ function getListValues(head: LinkedList): number[] {
 	return values;
 }
 
+// const starterCodeReverseLinkedListJS = `
+// /**
+//  * Definition for singly-linked list.
+//  * function ListNode(val, next) {
+//  *     this.val = (val===undefined ? 0 : val)
+//  *     this.next = (next===undefined ? null : next)
+//  * }
+//  */
+// // Do not edit function name
+// var reverseList = function(head) {
+//     // Write your code here
+// };
+// `;
+
 const starterCodeReverseLinkedListJS = `
 /**
  * Definition for singly-linked list.

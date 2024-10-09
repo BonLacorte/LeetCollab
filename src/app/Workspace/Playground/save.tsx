@@ -49,7 +49,6 @@ type Room = {
     host: string;
     code: string;
     messages: Message[];
-    whiteboard: any[];
 };
 
 
@@ -85,7 +84,6 @@ io.on('connection', (socket) => {
             host: username,
             code: '',
             messages: [],
-            whiteboard: []
         });
 
         const room = rooms.get(roomId);
@@ -119,8 +117,8 @@ io.on('connection', (socket) => {
     // Room joining
     socket.on('joinRoom', ({ roomId, username }, callback) => {
         console.log("joinRoom called")
-        // console.log("joinRoom - Rooms: ", rooms)
-        // console.log('joinRoom - Joining room: ', roomId, " User: ", username);
+        console.log("joinRoom - Rooms: ", rooms)
+        console.log('joinRoom - Joining room: ', roomId, " User: ", username);
         
         if (rooms.has(roomId)) {
             socket.join(roomId);
@@ -133,9 +131,9 @@ io.on('connection', (socket) => {
             
             // append the user to the room
             room?.users?.push(username);
-            // console.log("joinRoom - Users in the room: ", room?.users);
+            console.log("joinRoom - Users in the room: ", room?.users);
             // callback({ success: true });
-            // console.log("joinRoom - User joined the room: ", roomId);
+            console.log("joinRoom - User joined the room: ", roomId);
             
             io.to(roomId).emit('userJoined', { roomId, username, code: room?.code });
 
@@ -151,12 +149,12 @@ io.on('connection', (socket) => {
                 );
             }
             
-            // console.log("joinRoom - Users in the room after filter: ", room?.users);
+            console.log("joinRoom - Users in the room after filter: ", room?.users);
 
             callback({ success: true, selectedProblem: room?.selectedProblem?.idTitle, host: room?.host });
             // io.to(roomId).emit('userJoined', { roomId, username });
         } else {
-            // console.log("joinRoom - Room does not exist: ", roomId);
+            console.log("joinRoom - Room does not exist: ", roomId);
             // io.to(roomId).emit('roomDoesNotExist', { roomId, username });
             callback({ success: false, message: 'Room does not exists' });
         }
@@ -172,8 +170,17 @@ io.on('connection', (socket) => {
         callback({ success: true, host: room?.host });
     });
 
-    // Change problem
-    socket.on('changeProblem', ({ roomId, problemId, selectedProblem, starterCode }, callback) => {
+    // // Change problem
+    // socket.on('changeProblem', ({ roomId, problemId }, callback) => {
+    //     console.log("changeProblem called")
+    //     console.log("changeProblem - Rooms: ", rooms)
+    //     console.log('changeProblem - Changing problem: ', problemId, " in room: ", roomId);
+    //     // rooms.get(roomId)?.selectedProblem = problemId;
+    //     console.log("changeProblem - Problem changed: ", problemId);
+    //     callback({ success: true });
+    // });
+
+    socket.on('changeProblem', ({ roomId, problemId, selectedProblem }, callback) => {
         console.log("changeProblem called");
         console.log("changeProblem - Rooms: ", rooms);
         console.log('changeProblem - Changing problem: ', problemId, " in room: ", roomId);
@@ -181,8 +188,7 @@ io.on('connection', (socket) => {
         const room = rooms.get(roomId);
         if (room) {
             room.selectedProblem = selectedProblem; // Update this based on your Problem type
-            room.code = starterCode;
-            io.to(roomId).emit('problemChanged', { problemId, selectedProblem, starterCode });
+            io.to(roomId).emit('problemChanged', { problemId, selectedProblem });
             callback({ success: true });
         } else {
             callback({ success: false, message: 'Room not found' });
@@ -302,7 +308,7 @@ io.on('connection', (socket) => {
         // if (room) {
         //     room.code = code;
         // }
-        // socket.to(roomId).emit('codeChange', code);
+        socket.to(roomId).emit('codeChange', code);
 
         const room = rooms.get(roomId);
         if (room) {
@@ -331,28 +337,22 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('submissionSuccess', ({ roomId, problemId }) => {
-        const room = rooms.get(roomId);
-        if (room) {
-            console.log("submissionSuccess - Updating solved status: ", problemId);
-            io.to(roomId).emit('updateSolvedStatus', { problemId });
-        }
-    });
-
     // Handle get latest code
-    socket.on('getLatestCode', ({ roomId, starterCode }, callback) => {
+    socket.on('getLatestCode', ({ roomId, problem }, callback) => {
         const room = rooms.get(roomId);
+        console.log("getLatestCode - RoomId: ", roomId);
+        console.log("getLatestCode - Problem: ", problem);
         if (room) {
-            if (room.code && room.code.trim() !== '') {
-                console.log("getLatestCode - Returning stored code");
+            if (room.code) {
                 callback({ code: room.code });
             } else {
-                console.log("getLatestCode - No stored code, returning starter code");
-                room.code = starterCode;
-                callback({ code: starterCode });
+                // get the starter code from the problems object
+                // const starterCode = problem?.starterCode || '// Your code hereeeeeee';
+                // room.code = starterCode;
+                callback({ code: '' });
             }
         } else {
-            console.log("getLatestCode - Room not found, returning default code");
+
             callback({ code: '// Your code here' });
         }
     });
@@ -380,43 +380,6 @@ io.on('connection', (socket) => {
             callback(room.messages);
         } else {
             callback([]);
-        }
-    });
-
-    // Handle drawing on the whiteboard
-    socket.on('draw', ({ roomId, x, y, color, size, tool, isNewStroke }) => {
-        const room = rooms.get(roomId);
-        if (room) {
-            room.whiteboard.push({ x, y, color, size, tool, isNewStroke });
-            socket.to(roomId).emit('draw', { x, y, color, size, tool, isNewStroke });
-        }
-    });
-    
-    // Handle clear canvas
-    socket.on('clearCanvas', ({ roomId }) => {
-        const room = rooms.get(roomId);
-        if (room) {
-            room.whiteboard = [];
-            io.to(roomId).emit('clearCanvas');
-            io.to(roomId).emit('whiteboardStateUpdated', []);
-        }
-    });
-
-    // Handle get whiteboard
-    socket.on('getWhiteboardState', ({ roomId }, callback) => {
-        const room = rooms.get(roomId);
-        if (room) {
-            callback(room.whiteboard);
-        } else {
-            callback([]);
-        }
-    });
-
-    // Handle save whiteboard state
-    socket.on('saveWhiteboardState', ({ roomId, state }) => {
-        const room = rooms.get(roomId);
-        if (room) {
-            room.whiteboard = state;
         }
     });
 

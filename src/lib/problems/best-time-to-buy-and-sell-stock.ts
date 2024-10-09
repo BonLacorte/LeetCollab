@@ -19,6 +19,7 @@ const handlerMaxProfit = (fn: any) => {
 		for (let i = 0; i < prices.length; i++) {
 			const result = fn(prices[i]);
 			assert.strictEqual(result, expected[i]);
+            console.log("Hello");
 		}
 		return true;
 	} catch (error: any) {

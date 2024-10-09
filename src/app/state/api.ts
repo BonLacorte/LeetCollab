@@ -57,9 +57,16 @@ export const api = createApi({
         getSolvedProblems: build.query<SolvedProblems, string>({
             query: (userId: string) => `api/user/problem/solved/${userId}`,
             providesTags: ["UserSolvedProblems"],
-
+        }),
+        updateUserProblemSolved: build.mutation<void, { userId: string; problemId: string }>({
+            query: ({ userId, problemId }) => ({
+                url: `api/user/problem/solved`,
+                method: 'POST',
+                body: { userId, problemId },
+            }),
+            invalidatesTags: ["UserSolvedProblems"],
         }),
     }),
 });
 
-export const { useGetProblemsQuery, useGetProblemByIdTitleQuery, useGetUserDataOnProblemQuery, useGetSolvedProblemsQuery } = api;
+export const { useGetProblemsQuery, useGetProblemByIdTitleQuery, useGetUserDataOnProblemQuery, useGetSolvedProblemsQuery, useUpdateUserProblemSolvedMutation } = api;

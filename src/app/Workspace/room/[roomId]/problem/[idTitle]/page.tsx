@@ -41,10 +41,10 @@ const Workspace =  ({ params }: WorkspaceProps) => {
     const [isSolved, setIsSolved] = useState(false);
 
     const { data, isLoading, error } = useGetProblemByIdTitleQuery(idTitle);
-    console.log("data at Workspace:", data)
+    // console.log("data at Workspace:", data)
 
     const dbProblem = data as DBProblem;
-    console.log("dbProblem at Workspace:", dbProblem)
+    // console.log("dbProblem at Workspace:", dbProblem)
 
     useEffect(() => {
 
@@ -55,7 +55,7 @@ const Workspace =  ({ params }: WorkspaceProps) => {
                 if (storedRoomId === roomId && storedUsername === username) {
                     socket?.emit('joinRoom', { roomId, username }, (response: any) => {
                         if (response.success) {
-                            console.log('Reconnected to room:', roomId);
+                            // console.log('Reconnected to room:', roomId);
                         } else {
                             console.error('Failed to reconnect to room:', response.message);
                         }

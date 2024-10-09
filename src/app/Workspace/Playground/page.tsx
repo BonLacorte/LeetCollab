@@ -1,5 +1,3 @@
-'use client'
-
 import React, { useEffect, useState } from 'react'
 import Split from 'react-split';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -22,6 +20,7 @@ import TestResults from './TestResults/page';
 import { useSession } from 'next-auth/react';
 import { useAppDispatch, useAppSelector } from '@/app/redux';
 import Whiteboard from './Whiteboard/page';
+import { useUpdateUserProblemSolvedMutation } from '@/app/state/api';
 
 type Props = {
     roomId: string;
@@ -41,15 +40,15 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
     // const [libProblem, setLibProblem] = useState<Problem | null>(null);
     const socket = useSocket();
     const { toast } = useToast();
+    const { data: session } = useSession();
 
     const [testResults, setTestResults] = useState<TestCase[] | null>(null);
     const [runtime, setRuntime] = useState<number | null>(null);
 
     const [activeTab, setActiveTab] = useState<string>("testcase");
 
-    const dispatch = useAppDispatch();
-
     const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+    const [updateUserProblemSolved] = useUpdateUserProblemSolvedMutation();
 
     // const toggleDarkMode = () => {
     //     dispatch(setIsDarkMode(!isDarkMode));
@@ -57,12 +56,19 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
     
     useEffect(() => {
 
-        if (socket && problem) {
+        // console.log('problem on playground: ', problem);
 
+        if (socket && problem) {
             // Fetch the latest code when component mounts or page refreshes
-                socket.emit('getLatestCode', { roomId, problem }, (response: { code: string }) => {
-                    setCode(response.code === '' ? problem.starterCode : response.code);
-                });
+
+            let isMounted = true;
+
+            socket.emit('getLatestCode', { roomId, starterCode: problem.starterCode }, (response: { code: string }) => {
+                if (isMounted) {
+                    console.log("getLatestCode response: ", response);
+                    setCode(response.code);
+                }
+            });
 
     
             const handleCodeChange = (newCode: string) => {
@@ -70,7 +76,7 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
             };
     
             const handleSubmissionStart = (username: string) => {
-                console.log("submissionStart on client", username);
+                // console.log("submissionStart on client", username);
                 setIsSubmitting(true);
                 setSubmittingUser(username);
             };
@@ -78,11 +84,11 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
             const handleSubmissionResult = (result: { success: boolean, message: string }) => {
                 setIsSubmitting(false);
                 setSubmittingUser(null);
-                console.log("submissionResult", result);
+                // console.log("submissionResult", result);
             };
     
             const handleSubmissionToast = (toastData: { message: string, type: string }) => {
-                console.log("submissionToast", toastData);
+                // console.log("submissionToast", toastData);
                 if (toastData.type === "success") {
                     setSuccess(true);
                     toast({
@@ -98,15 +104,40 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
                 }
             };
     
+            const handleUpdateSolvedStatus = async (problemId: string) => {
+                console.log("updateSolvedStatus other user");
+                console.log("problemId: ", problemId);
+                console.log("session.user.id: ", session?.user?.id);
+                if (session?.user?.id && problemId) {
+                    try {
+                        setTimeout(() => {
+                            setSuccess(false);
+                        }, 5000);
+                        await updateUserProblemSolved({
+                            userId: session.user.id,
+                            problemId: problemId,
+                        }).unwrap();
+                        console.log("updateSolvedStatus other user - solved");
+                        setSolved(true);
+                    } catch (error) {
+                        console.error("Failed1 to mark problem as solved:", error);
+                    }
+                }
+            };
+            
+
             socket.on('codeChange', handleCodeChange);
             socket.on('submissionStart', handleSubmissionStart);
             socket.on('submissionResult', handleSubmissionResult);
             socket.on('submissionToast', handleSubmissionToast);
     
+            socket.on('updateSolvedStatus', handleUpdateSolvedStatus);
+
             // Re-join the room to ensure proper connection
-            socket.emit('joinRoom', { roomId, username }, (response: any) => {
+            socket.emit('joinRoom', { roomId, username, code }, (response: any) => {
                 if (response.success) {
-                    console.log('Reconnected to room:', roomId);
+                    console.log('joinRoom - Reconnected to room:', roomId);
+                    // console.log("joinRoom - code: ", code);
                 } else {
                     console.error('Failed to reconnect to room:', response.message);
                 }
@@ -117,21 +148,26 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
                 socket.off('submissionStart', handleSubmissionStart);
                 socket.off('submissionResult', handleSubmissionResult);
                 socket.off('submissionToast', handleSubmissionToast);
+
+                socket.off('updateSolvedStatus', handleUpdateSolvedStatus);
+
+                isMounted = false;
             };
         }
     }, [socket, toast, setSuccess, setSolved, roomId, idTitle, problem]);
 
     // this is to set the code to the starter code when the idTitle changes
-    useEffect(() => {
-        if (idTitle && problems[idTitle]) {
-            setCode(problems[idTitle].starterCode);
+    // useEffect(() => {
+    //     if (idTitle && problems[idTitle]) {
+    //         console.log("idTitle 1: ", idTitle);
+    //         setCode(problems[idTitle].starterCode);
 
-            // emit codeChange event
-            if (socket) {
-                socket.emit('codeChange', { roomId, code: problems[idTitle].starterCode });
-            }
-        }
-    }, [idTitle]);
+    //         // emit codeChange event
+    //         if (socket) {
+    //             socket.emit('codeChange', { roomId, code: problems[idTitle].starterCode });
+    //         }
+    //     }
+    // }, [idTitle]);
 
     const handleCodeChange = (value: string) => {
         setCode(value);
@@ -149,7 +185,7 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
         const startTime = performance.now();
         
         try {
-            const cb = new Function(`return ${code}`)();
+            const cb = new Function(`return (${code})`)();
             const testCases = problems[idTitle].examples;
             // console.log('testCases: ', testCases);
             const results = testCases.map((testCase, index) => {
@@ -207,21 +243,24 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
             socket.emit('submitCode', { roomId, code });
         }
 
-        setTimeout(() => {
+        setTimeout(async () => {
             setIsSubmitting(false);
             setSubmittingUser(null);
 
             try {
-                const cb = new Function(`return ${code}`)();
+                // delete all ";" on the end of the code
+                const codeWithoutSemicolon = code?.replace(/;$/g, '');
+                console.log('code: ', codeWithoutSemicolon);
+                const cb = new Function(`return (${codeWithoutSemicolon})`)();
                 const handler = problems[idTitle].handlerFunction;
-                const { data: session } = useSession();
+                
 
                 if (typeof handler === 'function') {
                     const success = handler(cb);
-                    // 
+                    
                     if (success) {
-                        // emit submissionSuccess event
                         if (socket) {
+                            socket.emit('submissionSuccess', { roomId, problemId: dbProblem?.problemId });
                             socket.emit('submissionMessage', { roomId, message: "Congratulations, All tests passed!", type: "success" });
                         }
                         toast({
@@ -230,31 +269,26 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
                         });
                         setSuccess(true);
 
-                        // update the solved status in the database
-                        const updateUserProblemSolved = async () => {
-                            const response = await fetch(`/api/problem/${idTitle}/solved`, {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                },
-                                body: JSON.stringify({
-                                    problemId: dbProblem?.problemId,
-                                    userId: session?.user.id,
-                                }),
-                            });
-                            const data = await response.json();
-                            if (data.success) {
-                                console.log("Problem marked as solved");
+                        if (session?.user?.id && dbProblem?.problemId) {
+                            try {
+                                setTimeout(() => {
+                                    setSuccess(false);
+                                }, 5000);
+                                await updateUserProblemSolved({
+                                    userId: session.user.id,
+                                    problemId: dbProblem.problemId,
+                                }).unwrap();
                                 setSolved(true);
-                            } else {
-                                console.error("Failed to mark problem as solved:", data.error);
+                                console.log("Problem marked as solved");
+                            } catch (error) {
+                                console.error("Failed to mark problem as solved:", error);
                             }
                         }
-                        updateUserProblemSolved();
-                        setSolved(true);
                     } else {
                         throw new Error("Some tests failed");
                     }
+                } else {
+                    throw new Error("Problem handler function not found");
                 }
             } catch (error: any) {
                 if (error.message === "Some tests failed") {
@@ -263,7 +297,7 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
                         socket.emit('submissionMessage', { roomId, message: "Oops! One or more test cases failed", type: "error" });
                     }
                     toast({
-                        title: "Error",
+                        title: "Error 1",
                         description: "Oops! One or more test cases failed",
                     });
                 } else if (error.message.startsWith('AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:')) {
@@ -272,7 +306,7 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
                         socket.emit('submissionMessage', { roomId, message: "Oops! One or more test cases failed", type: "error" });
                     }
                     toast({
-                        title: "Error",
+                        title: "Error 2",
                         description: "Oops! One or more test cases failed",
                     });
                 } else {
@@ -281,10 +315,13 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
                         socket.emit('submissionMessage', { roomId, message: error.message, type: "error" });
                     }
                     toast({
-                        title: "Error",
+                        title: "Error 3",
                         description: error.message,
                     });
                 }
+            } finally {
+                setIsSubmitting(false);
+                setSubmittingUser(null);
             }
         }, 3000);
     };

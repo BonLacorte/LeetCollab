@@ -11,7 +11,7 @@ const CardJoinRoom = ({socket, username}: {socket: Socket | null, username: stri
 
     const router = useRouter();
 
-    console.log("username: ", username);
+    // console.log("username: ", username);
 
     const handleJoinRoom = (e: React.FormEvent) => {
         e.preventDefault();

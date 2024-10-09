@@ -39,7 +39,6 @@ const Homepage = () => {
 
     const handleJoinRoom = () => {
         if (roomId) {
-
             router.push(`/workspace/room/${roomId}/problem/${problemIdTitle}`);
         }
     };

@@ -36,61 +36,14 @@ const Description: React.FC<DescriptionProps> = ({
     const [userDataLoading, setUserDataLoading] = useState(true);
 
     // equivalent to getCurrentProblem
-    console.log("dbProblem at Description:", dbProblem)
+    // console.log("dbProblem at Description:", dbProblem)
     // equivalent to getUserDataOnProblem
     const { data: userData, isLoading } = useGetUserDataOnProblemQuery({ 
         idTitle, 
         userId: session?.user?.id ?? '' 
     });
 
-    console.log("userData at Description:", userData)
-
-    // useEffect(() => {
-    //     // const getCurrentProblem = async () => {
-    //     //     setLoading(true);
-    //     //     try {
-    //     //         const response = await fetch(`/api/problem/${idTitle}`);
-    //     //         const problem: DBProblem = await response.json();
-    //     //         console.log("Fetched problem:", problem);
-    //     //         setCurrentProblem(problem);
-    //     //         setLoading(false);
-    //     //     } catch (error) {
-    //     //         console.error("Error fetching problem:", error);
-    //     //         setLoading(false);
-    //     //     }
-    //     // };
-    //     // getCurrentProblem();
-        
-    //     // setCurrentProblem(problem);
-    //     // setLoading(isLoading);
-
-    // }, [idTitle]);
-
-    // const { data: fetchProblem, isLoading } = useGetProblemByIdTitleQuery(idTitle);
-    // console.log("problem:", fetchProblem)
-
-
-    // useEffect(() => {
-    //     if (session?.user.id && idTitle) {
-    //         dispatch(fetchProblemData({ idTitle, userId: session.user.id }));
-    //     }
-    // }, [dispatch, idTitle, session?.user.id]);
-
-    // useEffect(() => {
-    //     console.log("Current data state:", data);
-    // }, [data]);
-
-    // if (loading) {
-    //     return (
-    //         <div className='mt-3 flex space-x-2'>
-    //             <RectangleSkeletons />
-    //             <CircleSkeletons />
-    //             <CircleSkeletons />
-    //             <RectangleSkeletons />
-    //             <CircleSkeletons />
-    //         </div>
-    //     );
-    // }
+    // console.log("userData at Description:", userData)
 
     return (
         <div className='flex px-0 py-4 h-[calc(100vh-109.5px)] overflow-y-auto'>
@@ -129,17 +82,6 @@ const Description: React.FC<DescriptionProps> = ({
                                 </div>
                             </div>
                         
-
-                        {/* {loading || userDataLoading (
-                            <div className='mt-3 flex space-x-2'>
-                                <RectangleSkeletons />
-                                <CircleSkeletons />
-                                <CircleSkeletons />
-                                <RectangleSkeletons />
-                                <CircleSkeletons />
-                            </div>
-                        )} */}
-
                         {/* Problem Statement(paragraphs) */}
                         <div className='text-sm'>
                             <div dangerouslySetInnerHTML={{ __html: problem?.problemStatement || '' }} />
@@ -183,68 +125,3 @@ const Description: React.FC<DescriptionProps> = ({
 }
 
 export default Description
-
-// function useGetCurrentProblem(idTitle: string) {
-// 	const [currentProblem, setCurrentProblem] = useState<DBProblem | null>(null);
-// 	const [loading, setLoading] = useState<boolean>(true);
-// 	const [problemDifficultyClass, setProblemDifficultyClass] = useState<string>("");
-
-// 	useEffect(() => {
-//         const fetchProblemByIdTitle = async () => {
-//             setLoading(true);
-//             try {
-//                 const response = await fetch(`/api/problem/${idTitle}`);
-//                 const problem: DBProblem = await response.json();
-//                 console.log("Fetched problem:", problem);
-                
-//                 if (problem && problem.difficulty) {
-//                     setCurrentProblem(problem);
-//                     console.log("problem.difficulty:", problem.difficulty);
-//                     setProblemDifficultyClass(
-//                         problem.difficulty === "Easy"
-//                             ? "bg-olive text-olive"
-//                             : problem.difficulty === "Medium"
-//                             ? "bg-dark-yellow text-dark-yellow"
-//                             : "bg-dark-pink text-dark-pink"
-//                     );
-//                 } else {
-//                     console.error("Problem or difficulty is undefined");
-//                 }
-//             } catch (error) {
-//                 console.error("Error fetching problem:", error);
-//             }
-//             setLoading(false);
-//         };
-//         fetchProblemByIdTitle();
-//     }, [idTitle]);
-
-// 	return { currentProblem, loading, problemDifficultyClass, setCurrentProblem };
-// }
-
-// function useGetUsersDataOnProblem(idTitle: string) {
-//     const { data: session } = useSession();
-//     const [data, setData] = useState({ liked: false, disliked: false, starred: false, solved: false });
-
-//     useEffect(() => {
-//         const getUsersDataOnProblem = async () => {
-//             if (session?.user.id) {
-//                 try {
-//                     const response = await fetch(`/api/problem/${idTitle}/${session?.user.id}`, {
-//                         method: "GET",
-//                         // params: { email: session.user.email, problemId }
-//                     });
-//                     const data = await response.json();
-//                     console.log("Page Description useGetUsersDataOnProblem data: ", data);
-
-//                     setData(data);
-//                 } catch (error) {
-//                     console.error("Error fetching user's problem data:", error);
-//                 }
-//             }
-//         };
-
-//         if (session?.user.username) getUsersDataOnProblem();
-//     }, [idTitle, session]);
-
-//     return { ...data, setData };
-// }

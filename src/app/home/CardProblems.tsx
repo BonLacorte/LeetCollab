@@ -62,7 +62,7 @@ const CardProblems = ({socket, username}: {socket: Socket | null, username: stri
             const roomId = Math.random().toString(36).substring(7); // Generate random roomId
 
             socket.emit('createRoom', { roomId, username, selectedProblem }, (response: any) => {
-                console.log("createRoom username: ", username);
+                // console.log("createRoom username: ", username);
                 if (response.success) {
                     router.push(`workspace/room/${roomId}/problem/${selectedProblem.idTitle}`);
                 } else {
@@ -96,9 +96,9 @@ const CardProblems = ({socket, username}: {socket: Socket | null, username: stri
     }
 
 
-    console.log("filteredProblems: ", filteredProblems?.map((problem: DBProblem) => problem.problemId))
+    // console.log("filteredProblems: ", filteredProblems?.map((problem: DBProblem) => problem.problemId))
     // console.log("solvedProblems: ", solvedProblems)
-    console.log("solvedProblems: ", solvedProblemsData?.map((problem: DBProblem) => problem.problemId))
+    // console.log("solvedProblems: ", solvedProblemsData?.map((problem: DBProblem) => problem.problemId))
 
     return (
         <div className="container mx-auto p-4">
