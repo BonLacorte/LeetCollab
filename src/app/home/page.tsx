@@ -38,6 +38,20 @@ const Homepage = () => {
     }, [socket, username]);
 
     const handleJoinRoom = () => {
+        if (!problemIdTitle || problemIdTitle === undefined) {
+            // go to home page
+            alert("Something went wrong. Leaving room...");
+            if (socket && roomId) {
+                socket.emit('leaveRoom', { roomId, username }, (response: { success: boolean }) => {
+                    if (response.success) {
+                        setInRoom(false);
+                        setRoomId(null);
+                    }
+                });
+            }
+            router.push('/');
+        }
+
         if (roomId) {
             router.push(`/workspace/room/${roomId}/problem/${problemIdTitle}`);
         }

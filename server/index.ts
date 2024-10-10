@@ -6,7 +6,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import http from 'http';
 import { Server } from 'socket.io';
-import { DBProblem } from '@/types/problems';
+import { DBProblem, Users } from '@/types/problems';
 import { Message } from 'postcss';
 // import userRoutes from './routes/userRoutes';
 // import problemRoutes from './routes/problemRoutes';
@@ -44,7 +44,7 @@ app.use(cors());
 // });
 
 type Room = {
-    users: string[] | null;
+    users: Users[] | null;
     selectedProblem: DBProblem | null;
     host: string;
     code: string;
@@ -80,7 +80,7 @@ io.on('connection', (socket) => {
         socket.join(roomId);
 
         rooms.set(roomId, {
-            users: [username],
+            users: [{username: username, isMuted: true}],
             selectedProblem,
             host: username,
             code: '',
@@ -132,24 +132,35 @@ io.on('connection', (socket) => {
             }
             
             // append the user to the room
-            room?.users?.push(username);
+            room?.users?.push({username: username, isMuted: true});
             // console.log("joinRoom - Users in the room: ", room?.users);
             // callback({ success: true });
             // console.log("joinRoom - User joined the room: ", roomId);
             
+            
+            // console.log("joinRoom - Code: ", room?.users);
+
             io.to(roomId).emit('userJoined', { roomId, username, code: room?.code });
 
-            // check for 'null' in users and remove them
+            // check for 'null' in users.username and remove them
             if (room?.users) {
-                room.users = room.users.filter(user => user !== null);
+                room.users = room.users.filter(user => user.username !== null);
             }
 
-            // check for duplicate users in the room and remove them
+            // check for duplicate users.username in the room and remove them
             if (room?.users) {
+                // room.users = room.users.filter((user, index, self) =>
+                //     index === self.indexOf(user)
+                // );
                 room.users = room.users.filter((user, index, self) =>
-                    index === self.indexOf(user)
+                    index === self.findIndex((t) => (
+                        t.username === user.username
+                    ))
                 );
             }
+
+            console.log("joinRoom - Users in the room: ", room?.users);
+            console.log("joinRoom - Host: ", room?.host);
             
             // console.log("joinRoom - Users in the room after filter: ", room?.users);
 
@@ -198,7 +209,12 @@ io.on('connection', (socket) => {
         let userRoomId = null;
         // Iterate through all rooms to find the user
         for (const [roomId, room] of Array.from(rooms.entries())) {
-            if (room.users && room.users.includes(username)) {
+            // if (room.users && room.users.includes(username)) {
+            //     userRoom = room;
+            //     userRoomId = roomId;
+            //     break;
+            // }
+            if (room.users && room.users.some(user => user.username === username)) {
                 userRoom = room;
                 userRoomId = roomId;
                 break;
@@ -234,7 +250,7 @@ io.on('connection', (socket) => {
         console.log("isUserInRoomId - Rooms: ", rooms)
         console.log('isUserInRoomId - Checking if user is in room: ', roomId, " User: ", username);
         const room = rooms.get(roomId);
-        if (room && room.users && room.users.includes(username)) {
+        if (room && room.users && room.users.some(user => user.username === username)) {
             callback({
                 success: true,
                 isInRoom: true,
@@ -261,7 +277,7 @@ io.on('connection', (socket) => {
         console.log("leaveRoom - Before deleting: Users in the room: ", room?.users);
         console.log("leaveRoom - Socket ID: ", socket.id);
         if (room && room.users) {
-            room.users = room.users.filter(user => user !== username);
+            room.users = room.users.filter(user => user.username !== username);
             io.to(roomId).emit('updateMembers', room.users);
         }
         console.log("leaveRoom - After deleting: Users in the room: ", room?.users);
@@ -285,7 +301,7 @@ io.on('connection', (socket) => {
 
         // if the room is not empty and the user is the host, change the host to the next user in the room
         if (room?.users && room.users.length > 0 && room.host === username) {
-            room.host = room.users[0];
+            room.host = room.users[0].username;
             io.to(roomId).emit('hostChanged', { roomId, newHost: room.host });
             console.log("leaveRoom - Host changed: ", roomId);
             console.log("leaveRoom - New host: ", room.host);
@@ -314,9 +330,9 @@ io.on('connection', (socket) => {
     });
 
     // Handle submission
-    socket.on('submitCode', ({ roomId, code }) => {
+    socket.on('submitCode', ({ roomId, username }) => {
         if (rooms.has(roomId)) {
-            io.to(roomId).emit('submissionStart', socket.id);
+            io.to(roomId).emit('submissionStart', username);
         }
     });
 
@@ -427,6 +443,18 @@ io.on('connection', (socket) => {
             callback(room.users);
         } else {
             callback([]);
+        }
+    });
+
+    // Handle mic toggle
+    socket.on('toggleMic', ({ roomId, username }) => {
+        const room = rooms.get(roomId);
+        if (room) {
+            const member = room.users?.find(user => user.username === username);
+            if (member) {
+                member.isMuted = !member.isMuted;
+                io.to(roomId).emit('updateMembers', room.users);
+            }
         }
     });
 

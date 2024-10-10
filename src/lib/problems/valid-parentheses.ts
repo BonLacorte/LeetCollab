@@ -1,5 +1,6 @@
 import assert from "assert";
 import { Problem } from "@/types/problems";
+import TestResults from "@/app/workspace/Playground/TestResults/page";
 
 export const validParenthesesHandler = (fn: any) => {
 	try {
@@ -12,6 +13,48 @@ export const validParenthesesHandler = (fn: any) => {
 		return true;
 	} catch (error: any) {
 		console.error("Error from validParenthesesHandler: ", error);
+		throw new Error(error);
+	}
+};
+
+const validParenthesesRun = (fn: any) => {
+	try {
+		const testResults = [] as { case: number; passed: boolean; input: any; expectedOutput: string; actualOutput: string }[];
+		const tests = ["()", "()[]{}", "(]", "([)]", "{[]}"];
+		const answers = [true, true, false, false, true];
+		for (let i = 0; i < tests.length; i++) {
+			// const passed = false
+
+			const result = fn(tests[i]);
+			try {
+				assert.deepEqual(result, answers[i]);
+
+				// add test result
+				testResults.push({
+					case: i + 1,
+					passed: JSON.stringify(result) === JSON.stringify(answers[i]),
+					input: "s: " + tests[i],
+					expectedOutput: answers[i].toString(),
+					actualOutput: JSON.stringify(result)
+				});
+			} catch (error: any) {
+				console.error("Error from validParenthesesRun: ", error);
+				// throw new Error(error);
+
+				// add test result
+				testResults.push({
+					case: i + 1,
+					passed: JSON.stringify(result) === JSON.stringify(answers[i]),
+					input: "s: " + tests[i],
+					expectedOutput: answers[i].toString(),
+					actualOutput: JSON.stringify(result)
+				});
+			}
+		}
+		return testResults;
+
+	} catch (error: any) {
+		console.error("Error from validParenthesesRun: ", error);
 		throw new Error(error);
 	}
 };
@@ -51,6 +94,7 @@ export const validParentheses: Problem = {
 	constraints: `<li class='mt-2'><code>1 <= s.length <= 10<sup>4</sup></code></li>
 <li class='mt-2 '><code>s</code> consists of parentheses only <code class="text-md">'()[]{}'</code>.</li>`,
 	handlerFunction: validParenthesesHandler,
+	handlerRun: validParenthesesRun,
 	starterCode: starterCodeValidParenthesesJS,
 	starterFunctionName: "function validParentheses(",
 	order: 4,

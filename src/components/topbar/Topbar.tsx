@@ -13,6 +13,8 @@ import UserAccountNav from '../navbar/UserAccountNav';
 import { useAppDispatch, useAppSelector } from '@/app/redux';
 import { setIsDarkMode } from '@/app/state';
 import { Moon, Sun } from 'lucide-react';
+import Image from 'next/image';
+import leetCollabLogo from '@/lib/problems/images/leetcollab-no-bg.png';
 
 const Topbar = () => {
     const username = useGetUsername();
@@ -61,12 +63,24 @@ const Topbar = () => {
     const handleProblemChange = (isForward: boolean) => {
         if (!isHost || !currentProblem || !roomId) return;
 
-        const direction = isForward ? 1 : -1;
-        const nextProblemOrder = currentProblem.order + direction;
-        const nextProblemKey = Object.keys(problems).find((key) => problems[key].order === nextProblemOrder);
+        const currentOrder = currentProblem.order;
+    
+        // Find the next or previous problem
+        const problemsArray = Object.values(problems);
+        let nextProblem;
 
-        if (nextProblemKey) {
-            const nextProblem = problems[nextProblemKey];
+        if (isForward) {
+            nextProblem = problemsArray
+                .filter(p => p.order > currentOrder)
+                .sort((a, b) => a.order - b.order)[0];
+        } else {
+            nextProblem = problemsArray
+                .filter(p => p.order < currentOrder)
+                .sort((a, b) => b.order - a.order)[0];
+        }
+
+        if (nextProblem) {
+            // const nextProblem = problems[nextProblemKey];
             
             // Emit socket event to change problem for all users in the room
             console.log("changeProblem called");
@@ -90,13 +104,21 @@ const Topbar = () => {
     };
 
     return (
-        <nav className='relative flex h-[50px] w-full shrink-0 items-center px-5 bg-dark-layer-1 text-dark-gray-7'>
-            <div className={`flex w-full items-center justify-between ${isWorkspacePage ? "max-w-[1200px] mx-auto" : ""}`}>
+        // <nav className='relative flex h-[50px] w-full shrink-0 items-center px-5 bg-dark-layer-1 text-dark-gray-7'>
+        // <nav className='flex justify-between items-center w-full mb-7'>
+            // <div className={`flex w-full items-center justify-between ${isWorkspacePage ? "max-w-[1200px] mx-auto" : ""}`}>
+            <div className='flex justify-between items-center w-full h-full'>
                 
                 {/* LEFT SIDE */}
-                <Link href='/' className='h-[22px] flex-1'>
-                    <img src='/logo-full.png' alt='Logo' className='h-full' />
-                </Link>
+                <div className='flex flex-row justify-between items-center'>
+                    <Link href='/'>
+                        {/* Leetcode logo */}
+                        <div className='flex items-center mx-4'>
+                            <Image src={leetCollabLogo} alt="Leetcode" width={24} height={24} />
+                        </div>
+                    </Link>
+                    <span className='font-semibold'>LeetCollab</span>
+                </div>
 
                 {/* MIDDLE SIDE */}
                 {isWorkspacePage && (
@@ -124,6 +146,7 @@ const Topbar = () => {
 
                 {/* RIGHT SIDE */}
                 <div className="flex justify-between items-center gap-5">
+                    
                     <div>
                         {/* <Sun className="cursor-pointer text-gray-500" size={24} /> */}
                         <button 
@@ -136,6 +159,9 @@ const Topbar = () => {
                             )}
                         </button>
                     </div>
+
+                    <hr className="w-0 h-7 border border-solid border-l border-gray-300 mx-3" />
+
                     <div className='flex items-center space-x-4 flex-1 justify-end'>
                         {/* Add your existing navbar items here */}
                         {username ? (
@@ -150,7 +176,7 @@ const Topbar = () => {
                     </div>
                 </div>
             </div>
-        </nav>
+        // </nav>
     );
 }
 

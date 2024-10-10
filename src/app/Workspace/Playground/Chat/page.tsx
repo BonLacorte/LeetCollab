@@ -58,7 +58,7 @@ const Chat: React.FC<ChatProps> = ({ roomId }) => {
     };
 
     return (
-        <div className="flex flex-col overflow-auto h-[30vh]">
+        <div className="flex flex-col overflow-auto h-[35vh]">
             <div 
                 ref={chatContainerRef}
                 className="flex-1 overflow-y-auto p-4 h-[calc(100vh-200px)]"
@@ -80,16 +80,16 @@ const Chat: React.FC<ChatProps> = ({ roomId }) => {
                 })}
                 <div ref={messagesEndRef} />
             </div>
-            <form onSubmit={sendMessage} className="p-4 border-t">
-                <div className="flex">
+            <form onSubmit={sendMessage} className="p-2 border-t">
+                <div className="flex justify-between ">
                     <input
                         type="text"
                         value={inputMessage}
                         onChange={(e) => setInputMessage(e.target.value)}
-                        className="flex-1 p-2 border rounded-l-lg"
+                        className="flex-1 p-2 mr-2 border rounded-2xl"
                         placeholder="Type a message..."
                     />
-                    <button type="submit" className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="submit" className="bg-gray-500 text-white p-2 rounded-2xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <Send size={20} />
                     </button>
                 </div>

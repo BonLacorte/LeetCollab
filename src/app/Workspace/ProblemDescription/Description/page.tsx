@@ -17,7 +17,6 @@ type DescriptionProps = {
     idTitle: string;
     handleLike: () => void;
     handleStar: () => void;
-    // isSolved: boolean;
 }
 
 const Description: React.FC<DescriptionProps> = ({ 
@@ -26,7 +25,6 @@ const Description: React.FC<DescriptionProps> = ({
     idTitle,
     handleLike,
     handleStar
-    // isSolved
 }) => {
 
     const [currentProblem, setCurrentProblem] = useState<DBProblem | null>(null);
@@ -46,7 +44,7 @@ const Description: React.FC<DescriptionProps> = ({
     // console.log("userData at Description:", userData)
 
     return (
-        <div className='flex px-0 py-4 h-[calc(100vh-109.5px)] overflow-y-auto'>
+        <div className='flex px-0 py-4 h-[calc(100vh-109.5px)]'>
             {isLoading ? (
             <div><p>Loading...</p></div>
             ) : (

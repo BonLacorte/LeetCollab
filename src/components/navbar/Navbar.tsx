@@ -8,6 +8,8 @@ import { useSession } from 'next-auth/react';
 import { useGetUsername } from '@/hooks/useGetUsername';
 import { useAppDispatch, useAppSelector } from '@/app/redux';
 import { setIsDarkMode } from '@/app/state';
+import Image from 'next/image';
+import leetCollabLogo from '@/lib/problems/images/leetcollab-no-bg.png';
 
 const Navbar = () => {
     const username = useGetUsername();
@@ -22,18 +24,14 @@ const Navbar = () => {
     return (
         <div className='flex justify-between items-center w-full mb-7'>
             {/* LEFT SIDE */}
-            <div className='flex justify-between items-center gap-5'>
+            <div className='flex flex-row justify-between items-center'>
                 <Link href='/'>
-                    <Menu className='w-4 h-4' />
+                    {/* Leetcode logo */}
+                    <div className='flex items-center mx-4'>
+                        <Image src={leetCollabLogo} alt="Leetcode" width={24} height={24} />
+                    </div>
                 </Link>
-                <div className="relative">
-                    <input
-                        type="search"
-                        placeholder="Start type to search groups & products"
-                        className="pl-10 pr-4 py-2 w-50 md:w-60 border-2 border-gray-300 bg-white rounded-lg focus:outline-none focus:border-blue-500"
-                    />
-                </div>
-                {/* sign */}
+                <span className='font-semibold'>LeetCollab</span>
             </div>
 
             {/* RIGHT SIDE */}
@@ -65,20 +63,19 @@ const Navbar = () => {
                         <span className="font-semibold">Bon Lacorte</span>
                     </div> */}
 
-                    {/* Sign In/Sign Out/Sign Up */}
-                    {username ? (
-                        <UserAccountNav user={{ name: username }} />
-                    ) : (
-                        <Link href="/sign-in">
-                            <button className='bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50'>
-                                Sign In
-                            </button>
-                        </Link>
-                    )}
+                    <div className='flex items-center space-x-4 flex-1 justify-end'>
+                        {/* Sign In/Sign Out/Sign Up */}
+                        {username ? (
+                                            <UserAccountNav user={{ name: username }} />
+                                        ) : (
+                                            <Link href="/sign-in">
+                                                <button className='bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50'>
+                                                    Sign In
+                                                </button>
+                                            </Link>
+                                        )}                
+                    </div>
                 </div>
-                {/* <Link href="/settings">
-                    <Settings className="cursor-pointer text-gray-500" size={24} />
-                </Link> */}
             </div>
         </div>
     )

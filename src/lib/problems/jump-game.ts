@@ -21,6 +21,51 @@ export const jumpGameHandler = (fn: any) => {
 	}
 };
 
+const jumpGameRun = (fn: any) => {
+	try {
+		const testResults = [] as { case: number; passed: boolean; input: any; expectedOutput: string; actualOutput: string }[];
+		const tests = [
+			[2, 3, 1, 1, 4],
+			[3, 2, 1, 0, 4],
+			[2, 0, 0],
+			[2, 5, 0, 0],
+		];
+		const answers = [true, false, true, true];
+		for (let i = 0; i < tests.length; i++) {
+			const result = fn(tests[i]);
+			try {
+				assert.equal(result, answers[i]);
+
+				// add test result
+				testResults.push({
+					case: i + 1,
+					passed: JSON.stringify(result) === JSON.stringify(answers[i]),
+					input: "nums: " + tests[i],
+					expectedOutput: answers[i].toString(),
+					actualOutput: JSON.stringify(result)
+				});
+			} catch (error: any) {
+				console.error("Error from jumpGameRun: ", error);
+				// throw new Error(error);
+
+				// add test result
+				testResults.push({
+					case: i + 1,
+					passed: JSON.stringify(result) === JSON.stringify(answers[i]),
+					input: "nums: " + tests[i],
+					expectedOutput: answers[i].toString(),
+					actualOutput: JSON.stringify(result)
+				});
+			}
+		}
+		return testResults;
+	} catch (error: any) {
+		console.log("Error from jumpGameRun: ", error);
+		throw new Error(error);
+	}
+};
+
+
 const starterCodeJumpGameJS = `function canJump(nums) {
   // Write your code here
 };`;
@@ -56,6 +101,7 @@ export const jumpGame: Problem = {
     <li class='mt-2'><code>0 <= nums[i] <= 10^5</code></li>`,
 	starterCode: starterCodeJumpGameJS,
 	handlerFunction: jumpGameHandler,
+	handlerRun: jumpGameRun,
 	starterFunctionName: "function canJump(",
 	order: 3,
 };

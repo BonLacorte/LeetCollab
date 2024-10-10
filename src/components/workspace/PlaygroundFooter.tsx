@@ -8,7 +8,7 @@ type PlaygroundFooterProps = {
 
 const PlaygroundFooter = ({ handleSubmit, handleRun }: PlaygroundFooterProps) => {
     return (
-        <div className='flex border-green-500 absolute bottom-0'>
+        <div className='flex border-green-500'>
             <div className='mx-5 my-[10px] flex justify-between w-full'>
                 <div className='mr-2 flex flex-1 flex-nowrap justify-between items-center space-x-4'>
                     {/* <button className='px-3 py-1.5 font-medium items-center transition-all inline-flex bg-gray-100 hover:bg-gray-200 text-sm text-dark-label-2 rounded-lg pl-3 pr-2'>

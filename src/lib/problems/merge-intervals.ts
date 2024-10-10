@@ -32,6 +32,53 @@ const handlerMergeIntervals = (fn: any) => {
 	}
 };
 
+const mergeIntervalsRun = (fn: any) => {
+	try {
+		const testResults = [] as { case: number; passed: boolean; input: any; expectedOutput: string; actualOutput: string }[];
+		const tests = [
+			[[1,3],[2,6],[8,10],[15,18]],
+			[[1,4],[4,5]],
+			[[1,4],[2,3]],
+		];
+		const answers = [
+			[[1,6],[8,10],[15,18]],
+			[[1,5]],
+			[[1,4]],
+		];
+		for (let i = 0; i < tests.length; i++) {
+			const result = fn(tests[i]);
+			try {
+				assert.deepStrictEqual(result, answers[i]);
+
+				// add test result
+				testResults.push({
+					case: i + 1,
+					passed: JSON.stringify(result) === JSON.stringify(answers[i]),
+					input: tests[i],
+					expectedOutput: answers[i].toString(),
+					actualOutput: JSON.stringify(result)
+				});
+			} catch (error: any) {
+				console.error("Error from mergeIntervalsRun: ", error);
+				// throw new Error(error);
+
+				// add test result
+				testResults.push({
+					case: i + 1,
+					passed: JSON.stringify(result) === JSON.stringify(answers[i]),
+					input: tests[i],
+					expectedOutput: answers[i].toString(),
+					actualOutput: JSON.stringify(result)
+				});
+			}
+		}
+		return testResults;
+	} catch (error: any) {
+		console.log("Error from mergeIntervalsRun: ", error);
+		throw new Error(error);
+	}
+};
+
 export const mergeIntervals: Problem = {
 	id: "merge-intervals",
 	title: "56. Merge Intervals",
@@ -62,6 +109,7 @@ export const mergeIntervals: Problem = {
         </li>`,
 	handlerFunction: handlerMergeIntervals,
 	starterCode: starterCodeMergeIntervals,
+	handlerRun: mergeIntervalsRun,
 	order: 56,
 	starterFunctionName: "function merge(",
 };

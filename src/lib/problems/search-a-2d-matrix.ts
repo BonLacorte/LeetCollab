@@ -39,6 +39,56 @@ function searchMatrix(matrix, target) {
   // Write your code here
 };`;
 
+const search2DMatrixRun = (fn: any) => {
+	try {
+		const testResults = [] as { case: number; passed: boolean; input: any; expectedOutput: string; actualOutput: string }[];
+		const tests = [
+			{
+				matrix: [
+					[1, 3, 5, 7],
+					[10, 11, 16, 20],
+					[23, 30, 34, 60],
+				],
+				target: 3,
+			},
+			{
+				matrix: [
+					[1, 3, 5, 7],
+					[10, 11, 16, 20],
+					[23, 30, 34, 60],
+				],
+				target: 13,
+			},
+		];
+		const answers = [true, false];
+		for (let i = 0; i < tests.length; i++) {
+			const result = fn(tests[i].matrix, tests[i].target);
+			try {
+				assert.deepEqual(result, answers[i]);
+				testResults.push({
+					case: i + 1,
+					passed: JSON.stringify(result) === JSON.stringify(answers[i]),
+					input: "matrix: " + JSON.stringify(tests[i].matrix) + ", target: " + tests[i].target,
+					expectedOutput: answers[i].toString(),
+					actualOutput: JSON.stringify(result)
+				});
+			} catch (error: any) {
+				testResults.push({
+					case: i + 1,
+					passed: false,
+					input: "matrix: " + JSON.stringify(tests[i].matrix) + ", target: " + tests[i].target,
+					expectedOutput: answers[i].toString(),
+					actualOutput: JSON.stringify(result)
+				});
+			}
+		}
+		return testResults;
+	} catch (error: any) {
+		console.log("Error from search2DMatrixRun: ", error);
+		throw new Error(error);
+	}
+};
+
 export const search2DMatrix: Problem = {
 	id: "search-a-2d-matrix",
 	title: "5. Search a 2D Matrix",
@@ -83,6 +133,7 @@ export const search2DMatrix: Problem = {
   `,
 	starterCode: starterCodeSearch2DMatrixJS,
 	handlerFunction: search2DMatrixHandler,
+	handlerRun: search2DMatrixRun,
 	starterFunctionName: "function searchMatrix",
 	order: 5,
 };

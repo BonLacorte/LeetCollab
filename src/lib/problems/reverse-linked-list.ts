@@ -1,6 +1,8 @@
 import assert from "assert";
 import { Problem } from "@/types/problems";
-import example from "./images/reverseLL.jpg";
+// import example from "./images/reverseLL.jpg";
+import example1 from "./images/reverse-linked-list-1.jpg";
+import example2 from "./images/reverse-linked-list-2.jpg";
 
 // JS doesn't have a built in LinkedList class, so we'll create one
 class LinkedList {
@@ -37,6 +39,46 @@ export const reverseLinkedListHandler = (fn: any) => {
 		return true;
 	} catch (error: any) {
 		console.log("Error from reverseLinkedListHandler: ", error);
+		throw new Error(error);
+	}
+};
+
+const reverseLinkedListRun = (fn: any) => {
+	try {
+		const testResults = [] as { case: number; passed: boolean; input: any; expectedOutput: string; actualOutput: string }[];
+		const tests = [[1, 2, 3, 4, 5], [5, 4, 3, 2, 1], [1, 2, 3], [1]];
+		const answers = [[5, 4, 3, 2, 1], [1, 2, 3, 4, 5], [3, 2, 1], [1]];
+		for (let i = 0; i < tests.length; i++) {
+			const list = createLinkedList(tests[i]);
+			const result = fn(list);
+			try {
+				assert.deepEqual(getListValues(result), answers[i]);
+
+				// add test result
+				testResults.push({
+					case: i + 1,
+					passed: JSON.stringify(result) === JSON.stringify(answers[i]),
+					input: "head: " + tests[i],
+					expectedOutput: answers[i].toString(),
+					actualOutput: JSON.stringify(result)
+				});
+			} catch (error: any) {
+				console.error("Error from reverseLinkedListRun: ", error);
+				// throw new Error(error);
+
+				// add test result
+				testResults.push({
+					case: i + 1,
+					passed: JSON.stringify(result) === JSON.stringify(answers[i]),
+					input: "head: " + tests[i],
+					expectedOutput: answers[i].toString(),
+					actualOutput: JSON.stringify(result)
+				});
+			}
+		}
+		return testResults;
+	} catch (error: any) {
+		console.log("Error from reverseLinkedListRun: ", error);
 		throw new Error(error);
 	}
 };
@@ -101,12 +143,13 @@ export const reverseLinkedList: Problem = {
 			id: 0,
 			inputText: "head = [1,2,3,4,5]",
 			outputText: "[5,4,3,2,1]",
-			img: example.src,
+			img: example1.src,
 		},
 		{
 			id: 1,
 			inputText: "head = [1,2,3]",
 			outputText: "[3,2,1]",
+			img: example2.src,
 		},
 		{
 			id: 2,
@@ -118,6 +161,7 @@ export const reverseLinkedList: Problem = {
 <li class='mt-2'><code>-5000 <= Node.val <= 5000</code></li>`,
 	starterCode: starterCodeReverseLinkedListJS,
 	handlerFunction: reverseLinkedListHandler,
+	handlerRun: reverseLinkedListRun,
 	starterFunctionName: "function reverseLinkedList(",
 	order: 2,
 };

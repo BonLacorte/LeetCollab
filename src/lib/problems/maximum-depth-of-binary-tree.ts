@@ -49,6 +49,60 @@ const handlerMaxDepth = (fn: any) => {
 	}
 };
 
+const maxDepthRun = (fn: any) => {
+	try {
+		const testResults = [] as { case: number; passed: boolean; input: any; expectedOutput: string; actualOutput: string }[];
+		const tests = [
+			// Tree: [3,9,20,null,null,15,7]
+			{
+				root: new TreeNode(3, new TreeNode(9), new TreeNode(20, new TreeNode(15), new TreeNode(7))),
+				expected: 3,
+			},
+			// Tree: [1,null,2]
+			{
+				root: new TreeNode(1, null, new TreeNode(2)),
+				expected: 2,
+			},
+			// Empty Tree: []
+			{
+				root: null,
+				expected: 0,
+			},
+		];
+		for (const { root, expected } of tests) {
+			const result = fn(root);
+			try {
+				assert.strictEqual(result, expected);
+
+				// add test result
+				testResults.push({
+					case: testResults.length + 1,
+					passed: JSON.stringify(result) === JSON.stringify(expected),
+					input: "root: " + JSON.stringify(root),
+					expectedOutput: expected.toString(),
+					actualOutput: JSON.stringify(result)
+				});
+			} catch (error: any) {
+				console.error("Error from maxDepthRun: ", error);
+				// throw new Error(error);
+
+				// add test result
+				testResults.push({
+					case: testResults.length + 1,
+					passed: JSON.stringify(result) === JSON.stringify(expected),
+					input: "root: " + JSON.stringify(root),
+					expectedOutput: expected.toString(),
+					actualOutput: JSON.stringify(result)
+				});
+			}
+		}
+		return testResults;
+	} catch (error: any) {
+		console.log("Error from maxDepthRun: ", error);
+		throw new Error(error);
+	}
+};
+
 export const maximumDepthOfBinaryTree: Problem = {
 	id: "maximum-depth-of-binary-tree",
 	title: "104. Maximum Depth of Binary Tree",
@@ -80,6 +134,7 @@ export const maximumDepthOfBinaryTree: Problem = {
         <code>-100 ≤ Node.val ≤ 100</code>
     </li>`,
 	handlerFunction: handlerMaxDepth,
+	handlerRun: maxDepthRun,
 	starterCode: starterCodeMaxDepth,
 	order: 104,
 	starterFunctionName: "function maxDepth(",

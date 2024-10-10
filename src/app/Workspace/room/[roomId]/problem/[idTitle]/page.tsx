@@ -176,11 +176,13 @@ const Workspace =  ({ params }: WorkspaceProps) => {
 
     return (
 
-        <div className='h-full'>
-            {isLoading ? (
+        // <div className='border border-green-500'>
+        <>
+            {isLoading ? 
+            (
                 <div><p>Loading...</p></div>
             ) : (
-            <>
+            <div className='h-full'>
                 <Topbar/>
                 <h1 className="text-center text-2xl font-bold mb-4">Room ID: {roomId} | Problem ID: {idTitle} | Host: {host}</h1>
 
@@ -191,19 +193,23 @@ const Workspace =  ({ params }: WorkspaceProps) => {
                     Leave Room
                 </button>
 
-                <Split className="split  border-black h-[calc(100vh-130px)]" minSize={0}>
+                {/* <Split className="split  border-black h-[calc(100vh-130px)]" minSize={0}> */}
+                <div className='flex flex-row'>
                     {/* <ProblemDescription roomId={roomId} idTitle={idTitle} dbProblem={dbProblem as DBProblem} problem={problem as Problem} isSolved={isSolved} />   */}
-                    <ProblemDescription roomId={roomId} idTitle={idTitle} dbProblem={dbProblem} problem={problem as Problem} />  
+                    <div className='w-1/2 h-full'>
+                        <ProblemDescription roomId={roomId} idTitle={idTitle} dbProblem={dbProblem} problem={problem as Problem} />  
+                    </div>
                     
-                    <div className='w-1/2'>
+                    <div className='w-1/2 h-full'>
                         <Playground roomId={roomId} idTitle={idTitle} setSuccess={setSuccess} setSolved={setSolved} dbProblem={dbProblem as DBProblem} problem={problem as Problem}/>
                         {/* <Playground roomId={roomId} idTitle={idTitle} setSuccess={setSuccess} setSolved={setSolved}/> */}
                         {success && <Confetti gravity={0.3} tweenDuration={4000} width={width - 1} height={height - 1} />}
                     </div>
-                </Split>
-            </>
+                </div>
+                {/* </Split> */}
+            </div>
             )}
-        </div>
+        </>
     );
 }
 

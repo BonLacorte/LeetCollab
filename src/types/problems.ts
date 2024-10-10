@@ -16,6 +16,7 @@ export type Problem = {
 	order: number;
 	starterCode: string;
 	handlerFunction: ((fn: any) => boolean) | string;
+	handlerRun: ((fn: any) => { case: number; passed: boolean; input: any; expectedOutput: string; actualOutput: string }[]);
 	starterFunctionName: string;
 };
 
@@ -42,4 +43,9 @@ export type TestCase = {
     input: string;
     expectedOutput: string;
     actualOutput: string;
+}
+
+export type Users = {
+    username: string;
+    isMuted: boolean;
 }

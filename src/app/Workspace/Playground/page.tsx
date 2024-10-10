@@ -185,42 +185,20 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
         const startTime = performance.now();
         
         try {
-            const cb = new Function(`return (${code})`)();
-            const testCases = problems[idTitle].examples;
-            // console.log('testCases: ', testCases);
-            const results = testCases.map((testCase, index) => {
-                // Parse input string to extract nums and target
-                const inputMatch = testCase.inputText.match(/nums = (\[.*?\]),\s*target = (\d+)/);
-                if (!inputMatch) {
-                    throw new Error(`Invalid input format for test case ${index + 1}`);
-                }
-                const nums = JSON.parse(inputMatch[1]);
-                const target = parseInt(inputMatch[2]);
-    
-                const expectedOutput = JSON.parse(testCase.outputText);
-                const actualOutput = cb(nums, target);
+            const codeWithoutSemicolon = code?.replace(/;$/g, '');
+            console.log('code: ', codeWithoutSemicolon);
+            const cb = new Function(`return (${codeWithoutSemicolon})`)();
 
-                // console.log('actualOutput: ', actualOutput);
-                // console.log('expectedOutput: ', expectedOutput);
+            const run = problems[idTitle].handlerRun;
+            const results = run(cb);
 
-                // console.log('passedd: ', JSON.stringify(actualOutput) === JSON.stringify(expectedOutput));
+            console.log('handlerRun results: ', results);
 
-                return {
-                    case: index + 1,
-                    passed: JSON.stringify(actualOutput) === JSON.stringify(expectedOutput),
-                    input: testCase.inputText,
-                    expectedOutput: testCase.outputText,
-                    actualOutput: JSON.stringify(actualOutput)
-                };
-            });
-    
             const endTime = performance.now();
             setRuntime(Math.round(endTime - startTime));
-            console.log('results: ', results);
             setTestResults(results);
-
             setActiveTab("result");
-            // socket.emit('codeChange', { roomId, code: code });
+
         } catch (error: any) {
             console.error('Error in handleRun:', error);
             
@@ -240,7 +218,7 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
         setSubmittingUser(username); // Assuming the current user is submitting
         
         if (socket) {
-            socket.emit('submitCode', { roomId, code });
+            socket.emit('submitCode', { roomId, username });
         }
 
         setTimeout(async () => {
@@ -300,7 +278,7 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
                         title: "Error 1",
                         description: "Oops! One or more test cases failed",
                     });
-                } else if (error.message.startsWith('AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:')) {
+                } else if (error.message.startsWith('AssertionError: Expected values to be loosely deep-equal:')) {
                     // emit submissionFailure event
                     if (socket) {
                         socket.emit('submissionMessage', { roomId, message: "Oops! One or more test cases failed", type: "error" });
@@ -335,13 +313,13 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
     }
 
     return (
-        <div className='border'>
+        <div className='border-t'>
             <PlaygroundHeader />
             {/* <Split className='h-[calc(100vh-94px)]' direction='vertical' sizes={[60,40]} minSize={60}> */}
             {/* <div className='flex flex-col h-[calc(100vh-115px)]'> */}
-            <div className='flex flex-col border h-full'>
+            <div className='flex flex-col h-full'>
 
-                <div className='w-full h-[calc(35vh)] border overflow-auto'>
+                <div className='w-full h-[calc(38.8vh)] border overflow-auto'>
                     <CodeMirror 
                         // value={boilerplate}
                         value={code}
@@ -351,34 +329,33 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
                         onChange={handleCodeChange}
                     />
                 </div>
-                <div className='w-full h-[calc(35vh)] '>
+                <div className='w-full h-[calc(38.8vh)] border border-l'>
                     {/* Bottom tabs */}
                     <div className="w-full h-full overflow-auto">
                         <div className='flex flex-row w-full h-full'>
-                            <div className='w-3/5 border '>
+                            <div className='w-3/5 border-r'>
                                 <Tabs defaultValue="testcase" value={activeTab} onValueChange={setActiveTab}>
-                                    <TabsList>
-                                        <TabsTrigger value="testcase">Testcase</TabsTrigger>
-                                        <TabsTrigger value="result">Result</TabsTrigger>
-                                        <TabsTrigger value="whiteboard">Whiteboard</TabsTrigger>
-                                        
+                                    <TabsList className='bg-gray-200'>
+                                        <TabsTrigger value="testcase" className="hover:bg-gray-300 px-4">Testcase</TabsTrigger>
+                                        <TabsTrigger value="result" className="hover:bg-gray-300 px-4">Result</TabsTrigger>
+                                        <TabsTrigger value="whiteboard" className="hover:bg-gray-300 px-4">Whiteboard</TabsTrigger>
                                     </TabsList>
                                     <TabsContent value="testcase" className="p-4">
                                         <TestCases problem={problems[idTitle]} />
                                     </TabsContent>
-                                    <TabsContent value="result" className='overflow-auto h-[30vh]'>
+                                    <TabsContent value="result" className='overflow-auto h-[35vh]'>
                                         <TestResults results={testResults} runtime={runtime} />
                                     </TabsContent>
-                                    <TabsContent value="whiteboard" className='h-[30vh]'>
+                                    <TabsContent value="whiteboard" className='h-[35vh]'>
                                         <Whiteboard roomId={roomId} />
                                     </TabsContent>
                                 </Tabs>
                             </div>
-                            <div className='w-2/5 border'>
+                            <div className='w-2/5'>
                                 <Tabs defaultValue="chat">
-                                    <TabsList>
-                                        <TabsTrigger value="chat">Chat</TabsTrigger>
-                                        <TabsTrigger value="members">Members</TabsTrigger>
+                                    <TabsList className='bg-gray-200'>
+                                        <TabsTrigger value="chat" className='hover:bg-gray-300 px-4'>Chat</TabsTrigger>
+                                        <TabsTrigger value="members" className='hover:bg-gray-300 px-4'>Members</TabsTrigger>
                                     </TabsList>
                                     <TabsContent value="chat">
                                         <Chat roomId={roomId} />
@@ -397,74 +374,6 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
             <PlaygroundFooter handleSubmit={handleSubmit} handleRun={handleRun} />
             {isSubmitting && <LoadingSubmitModal username={submittingUser} />}
 
-            {/* <Split className='h-[calc(100vh-94px)]' direction='vertical' sizes={[60,40]} minSize={60}> */}
-                {/* <div className='w-full overflow-auto'> */}
-                    {/* <CodeMirror 
-                        // value={boilerplate}
-                        value={userCode}
-                        theme={vscodeDark}
-                        extensions={[javascript()]}
-                        style={{fontSize: settings.fontSize}}
-                        onChange={onChange}
-                    /> */}
-                    {/* <div className="flex-1 overflow-auto"> */}
-                        {/* <Tabs defaultValue="javascript">
-                        <TabsList>
-                            <TabsTrigger value="javascript">JavaScript</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="javascript" className="p-4">
-                            <pre className="bg-gray-800 p-2 rounded">
-                            <code>
-                                {`function isSubsequence(s, t) {
-                                // Your code here
-                                }`}
-                            </code>
-                            </pre>
-                        </TabsContent>
-                        </Tabs> */}
-                    {/* </div> */}
-                {/* </div> */}
-                {/* <div className='w-full px-5 overflow-auto'> */}
-                    {/* testcase heading */}
-                    {/* <div className='flex h-10 items-center space-x-6'>
-                        <div className='relative flex h-full flex-col justify-center cursor-pointer'>
-                            <div className='text-sm font-medium leading-5 text-white'>Testcases</div>
-                            <hr className='absolute bottom-0 h-0.5 w-full rounded-full border-none bg-white'/>
-                        </div>
-                    </div>
-
-                    <div className='flex'>
-                        {problem.examples.map((example, index) => (
-							<div
-								className='mr-2 items-start mt-2 '
-								key={example.id}
-								onClick={() => setActiveTestCaseId(index)}
-							>
-								<div className='flex flex-wrap items-center gap-y-4'>
-									<div
-										className={`font-medium items-center transition-all focus:outline-none inline-flex bg-dark-fill-3 hover:bg-dark-fill-2 relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
-										${activeTestCaseId === index ? "text-white" : "text-gray-500"}
-									`}
-									>
-										Case {index + 1}
-									</div>
-								</div>
-							</div>
-						))}
-                    </div>
-                    
-                    <div className='font-semibold'>
-                        <p className='text-sm font-medium mt-4 text-white'>Input:</p>
-                        <div className='w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-2'>
-                            {problem.examples[activeTestCaseId].inputText}
-                        </div>
-                        <p className='text-sm font-medium mt-4 text-white'>Output:</p>
-                        <div className='w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-2'>
-                            {problem.examples[activeTestCaseId].outputText}
-                        </div>
-                    </div> */}
-                {/* </div> */}
-            {/* </Split> */}
         </div>
     )
 }

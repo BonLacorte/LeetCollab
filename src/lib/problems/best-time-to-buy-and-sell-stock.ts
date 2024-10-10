@@ -28,6 +28,48 @@ const handlerMaxProfit = (fn: any) => {
 	}
 };
 
+const maxProfitRun = (fn: any) => {
+	try {
+		const testResults = [] as { case: number; passed: boolean; input: any; expectedOutput: string; actualOutput: string }[];
+		const tests = [
+			[7, 1, 5, 3, 6, 4], 
+			[7, 6, 4, 3, 1]
+		];
+		const answers = [5, 0];
+		for (let i = 0; i < tests.length; i++) {
+			const result = fn(tests[i]);
+			try {
+				assert.strictEqual(result, answers[i]);
+
+				// add test result
+				testResults.push({
+					case: i + 1,
+					passed: JSON.stringify(result) === JSON.stringify(answers[i]),
+					input: "prices: " + tests[i],
+					expectedOutput: answers[i].toString(),
+					actualOutput: JSON.stringify(result)
+				});
+			} catch (error: any) {
+				console.error("Error from maxProfitRun: ", error);
+				// throw new Error(error);
+
+				// add test result
+				testResults.push({
+					case: i + 1,
+					passed: JSON.stringify(result) === JSON.stringify(answers[i]),
+					input: "prices: " + tests[i],
+					expectedOutput: answers[i].toString(),
+					actualOutput: JSON.stringify(result)
+				});
+			}
+		}
+		return testResults;
+	} catch (error: any) {
+		console.log("Error from maxProfitRun: ", error);
+		throw new Error(error);
+	}
+};
+
 export const bestTimeToBuyAndSellStock: Problem = {
 	id: "best-time-to-buy-and-sell-stock",
 	title: "121. Best Time to Buy and Sell Stock",
@@ -57,6 +99,7 @@ export const bestTimeToBuyAndSellStock: Problem = {
         <code>0 ≤ prices[i] ≤ 10<sup>4</sup></code>
     </li>`,
 	handlerFunction: handlerMaxProfit,
+	handlerRun: maxProfitRun,
 	starterCode: starterCodeMaxProfit,
 	order: 121,
 	starterFunctionName: "function maxProfit(",

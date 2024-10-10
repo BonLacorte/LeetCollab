@@ -35,6 +35,55 @@ const handlerTwoSum = (fn: any) => {
 	}
 };
 
+const runTwoSum = (fn: any) => {
+	try {
+		const testResults = [] as { case: number; passed: boolean; input: any; expectedOutput: string; actualOutput: string }[];
+		const targets = [9, 6, 6];
+		const tests = [
+			[2, 7, 11, 15],
+			[3, 2, 4],
+			[3, 3],
+		];
+		const answers = [
+			[0, 1],
+			[1, 2],
+			[0, 1],
+		];
+		for (let i = 0; i < tests.length; i++) {
+			const result = fn(tests[i], targets[i]);
+			console.log('result: ', result);
+			try {
+				assert.deepStrictEqual(result, answers[i]);
+
+					// add test result
+				testResults.push({
+					case: i + 1,
+					passed: JSON.stringify(result) === JSON.stringify(answers[i]),
+					input: "nums: " + tests[i] + ", target: " + targets[i],
+					expectedOutput: answers[i].toString(),
+					actualOutput: JSON.stringify(result)
+				});
+			} catch (error: any) {
+				console.error("Error from twoSumRun: ", error);
+				// throw new Error(error);
+
+				// add test result
+				testResults.push({
+					case: i + 1,
+					passed: JSON.stringify(result) === JSON.stringify(answers[i]),
+					input: "nums: " + tests[i] + ", target: " + targets[i],
+					expectedOutput: answers[i].toString(),
+					actualOutput: JSON.stringify(result)
+				});
+			}
+		}
+		return testResults;
+	} catch (error: any) {
+		console.log("twoSum handler function error");
+		throw new Error(error);
+	}
+}
+
 export const twoSum: Problem = {
 	id: "two-sum",
 	title: "1. Two Sum",
@@ -78,6 +127,7 @@ export const twoSum: Problem = {
         <strong>Only one valid answer exists.</strong>
     </li>`,
 	handlerFunction: handlerTwoSum,
+	handlerRun: runTwoSum,
 	starterCode: starterCodeTwoSum,
 	order: 1,
 	starterFunctionName: "function twoSum(",

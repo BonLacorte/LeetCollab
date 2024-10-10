@@ -187,7 +187,7 @@ const CardProblems = ({socket, username}: {socket: Socket | null, username: stri
                                                         <div className="flex items-center"></div>
                                                     )}
                                                 </TableCell>
-                                                <TableCell className="font-medium">{problem.title}</TableCell>
+                                                <TableCell className="font-medium">{problem.order}. {problem.title}</TableCell>
                                                 <TableCell>
                                                     <Badge variant="outline">{problem.difficulty}</Badge>
                                                 </TableCell>
