@@ -27,11 +27,30 @@ export interface SolvedProblems {
     updatedAt: Date;
 }
 
+export interface User {
+    userId: string;
+    name: string;
+    username: string;
+    email: string;
+    role: string;
+    password: string;
+    image: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface Submission {
+    submissionId: string;
+    problemId: string;
+    userId: string;
+    status: string;
+    createdAt: Date;
+}
 
 export const api = createApi({
     baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),
     reducerPath: "api",
-    tagTypes: ["Problems", "ProblemByIdTitle", "UserDataOnProblem", "UserSolvedProblems"],
+    tagTypes: ["Problems", "ProblemByIdTitle", "UserDataOnProblem", "UserSolvedProblems", "UserLikedProblem", "UserStarredProblem", "UserSubmission", "UserProfile", "UserRankAndAcceptanceRate"],
     endpoints: (build) => ({
         getProblems: build.query<DBProblem[], void>({
             query: () => "api/problem/",
@@ -54,11 +73,23 @@ export const api = createApi({
                 message: response.data.message,
             }),
         }),
-        getSolvedProblems: build.query<SolvedProblems, string>({
+        getUserSolvedProblems: build.query<SolvedProblems[], string>({
             query: (userId: string) => `api/user/problem/solved/${userId}`,
             providesTags: ["UserSolvedProblems"],
         }),
-        updateUserProblemSolved: build.mutation<void, { userId: string; problemId: string }>({
+        getUserSubmissions: build.query<Submission[], string>({
+            query: (userId: string) => `api/user/problem/submission/${userId}`,
+            providesTags: ["UserSubmission"],
+        }),
+        getUserProfile: build.query<User, string>({
+            query: (userId: string) => `api/user/${userId}`,
+            providesTags: ["UserProfile"],
+        }),
+        getUserRankAndAcceptanceRate: build.query<{ userRank: number; userAcceptanceRate: number; topUsers: any[]; }, string>({
+            query: (userId: string) => `api/user/problem/${userId}`,
+            providesTags: ["UserRankAndAcceptanceRate"],
+        }),
+        updateUserSolvedProblem: build.mutation<void, { userId: string; problemId: string }>({
             query: ({ userId, problemId }) => ({
                 url: `api/user/problem/solved`,
                 method: 'POST',
@@ -66,7 +97,31 @@ export const api = createApi({
             }),
             invalidatesTags: ["UserSolvedProblems"],
         }),
+        updateUserLikedProblem: build.mutation<void, { userId: string; problemId: string }>({
+            query: ({ userId, problemId }) => ({
+                url: `api/user/problem/liked`,
+                method: 'POST',
+                body: { userId, problemId },
+            }),
+            invalidatesTags: ["UserLikedProblem"],
+        }),
+        updateUserStarredProblem: build.mutation<void, { userId: string; problemId: string }>({
+            query: ({ userId, problemId }) => ({
+                url: `api/user/problem/starred`,
+                method: 'POST',
+                body: { userId, problemId },
+            }),
+            invalidatesTags: ["UserStarredProblem"],
+        }),
+        createSubmission: build.mutation<void, { userId: string; problemId: string; status: string }>({
+            query: ({ userId, problemId, status }) => ({
+                url: `api/user/problem/submission`,
+                method: 'POST',
+                body: { userId, problemId, status },
+            }),
+            invalidatesTags: ["UserSubmission"],
+        }),
     }),
 });
 
-export const { useGetProblemsQuery, useGetProblemByIdTitleQuery, useGetUserDataOnProblemQuery, useGetSolvedProblemsQuery, useUpdateUserProblemSolvedMutation } = api;
+export const { useGetProblemsQuery, useGetProblemByIdTitleQuery, useGetUserDataOnProblemQuery, useGetUserSolvedProblemsQuery, useGetUserSubmissionsQuery, useUpdateUserSolvedProblemMutation, useUpdateUserLikedProblemMutation, useUpdateUserStarredProblemMutation, useCreateSubmissionMutation, useGetUserProfileQuery, useGetUserRankAndAcceptanceRateQuery } = api;

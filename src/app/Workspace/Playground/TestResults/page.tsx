@@ -11,7 +11,7 @@ type TestResultProps = {
 
 const TestResults = ({ results, runtime }: TestResultProps) => {
     if (!results) {
-        return <div>No test results available. Click "Run" to test your code.</div>
+        return <h3 className="text-lg text-gray-900 font-semibold mb-2">No test results available. Click "Run" to test your code.</h3>
     }
 
     const allPassed = results.every(result => result.passed);
@@ -33,9 +33,9 @@ const TestResults = ({ results, runtime }: TestResultProps) => {
                 {/* {runtime !== null && <p>Runtime: {runtime} ms</p>} */}
             </div>
             <div>
-                <h3 className="text-lg font-semibold mb-2">Test Cases:</h3>
+                <h3 className="text-lg text-gray-900 font-semibold mb-2">Test Cases:</h3>
                 {results.map((testCase, index) => (
-                    <div key={index} className="mb-4 p-2 border rounded">
+                    <div key={index} className="mb-4 p-2 border rounded text-gray-900">
                         <h4 className="font-medium">Case {testCase.case}:</h4>
                         <p><strong>Input:</strong> {testCase.input}</p>
                         <p><strong>Expected Output:</strong> {testCase.expectedOutput}</p>

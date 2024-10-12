@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useSocket } from '@/components/SocketProvider';
+import { Button } from '@/components/ui/button';
 
 type WhiteboardProps = {
     roomId: string;
@@ -224,14 +225,14 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
 
     return (
         <div className="flex flex-col border-red-500 h-full">
-            <div className="flex justify-between">
-                <div>
-                    <button
+            <div className="flex justify-between w-full pb-4">
+                <div className='w-1/4 flex'>
+                    <Button
                         onClick={() => setTool('pen')}
-                        className={`px-2 py-1 mr-2 ${tool === 'pen' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                        className={`px-2 py-1 mr-2 ${tool === 'pen' ? 'bg-gray-900 text-white' : 'bg-gray-200'}`}
                     >
                         Pen
-                    </button>
+                    </Button>
                     {/* <button
                         onClick={() => setTool('eraser')}
                         className={`px-2 py-1 ${tool === 'eraser' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
@@ -239,7 +240,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
                         Eraser
                     </button> */}
                 </div>
-                <div>
+                <div className='w-2/4 flex justify-center'>
                     <input
                         type="color"
                         value={color}
@@ -254,9 +255,11 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
                         onChange={(e) => setSize(parseInt(e.target.value))}
                         className="mr-2"
                     />
-                    <button onClick={clearCanvas} className="px-2 py-1 bg-red-500 text-white">
+                </div>
+                <div className='w-1/4 flex justify-end'>
+                    <Button onClick={clearCanvas} className="px-2 py-1 bg-gray-900 text-white">
                         Clear All
-                    </button>
+                    </Button>
                 </div>
             </div>
             <canvas

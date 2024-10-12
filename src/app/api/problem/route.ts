@@ -9,7 +9,7 @@ export const GET = async (req: Request) => {
                 order: 'asc',
             },
         });
-        return NextResponse.json({ problems });
+        return NextResponse.json( problems );
     } catch (error) {
         return NextResponse.json({ error: "Failed to fetch problems" }, { status: 500 });
     }

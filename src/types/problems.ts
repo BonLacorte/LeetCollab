@@ -45,7 +45,17 @@ export type TestCase = {
     actualOutput: string;
 }
 
-export type Users = {
+export type Member = {
     username: string;
     isMuted: boolean;
+}
+
+export type User = {
+    userId: string;
+    name: string;
+    username: string;
+    email: string;
+    
+
+    acceptanceRate: number;
 }

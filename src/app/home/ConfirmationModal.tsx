@@ -20,7 +20,7 @@ type Props = {
 const ConfirmationModal: React.FC<Props> = ({ isOpen, onClose, onConfirm }) => {
     return (
         <AlertDialog open={isOpen} onOpenChange={onClose}>
-            <AlertDialogContent>
+            <AlertDialogContent className='border-none rounded-2xl shadow-xl'>
                 <AlertDialogHeader>
                     <AlertDialogTitle>Create a Room?</AlertDialogTitle>
                     <AlertDialogDescription>
@@ -34,8 +34,8 @@ const ConfirmationModal: React.FC<Props> = ({ isOpen, onClose, onConfirm }) => {
                     type="password"
                 /> */}
                 <AlertDialogFooter>
-                    <AlertDialogCancel onClick={onClose}>No</AlertDialogCancel>
-                    <AlertDialogAction onClick={onConfirm}>Yes</AlertDialogAction>
+                    <AlertDialogCancel className='border border-gray-300 hover:border-gray-500 rounded-2xl px-4 py-2' onClick={onClose}>No</AlertDialogCancel>
+                    <AlertDialogAction className='border border-gray-300 hover:border-gray-500 rounded-2xl px-4 py-2' onClick={onConfirm}>Yes</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>

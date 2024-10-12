@@ -28,6 +28,7 @@ model User {
   likedProblems   LikedProblems[]
   solvedProblems  SolvedProblems[]
   starredProblems StarredProblems[]
+  submissions     Submission[]
 }
 
 model Problem {
@@ -45,6 +46,7 @@ model Problem {
   solvedProblems        SolvedProblems[]
   starredProblems       StarredProblems[]
   problemSet           ProblemSet[]
+  submissions           Submission[]
 }
 
 model Set {
@@ -113,7 +115,20 @@ model StarredProblems {
   @@unique([userId, problemId])
 }
 
+model Submission {
+  submissionId    String          @id @default(uuid())
+  userId          String
+  problemId       String
+  status          String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
+  // Relations
+  user            User            @relation(fields: [userId], references: [userId])
+  problem         Problem         @relation(fields: [problemId], references: [problemId])
+
+  // @@unique([userId, problemId])
+}
 
 enum Role {
   ADMIN

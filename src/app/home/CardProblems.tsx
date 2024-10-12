@@ -13,21 +13,10 @@ import { useRouter } from 'next/navigation';
 import { io, Socket } from 'socket.io-client'; // Importing Socket.IO client
 import ConfirmationModal from "./ConfirmationModal";
 import { useSession } from 'next-auth/react'; // Assuming you're using NextAuth
-import { useGetProblemsQuery, useGetSolvedProblemsQuery, useGetUserDataOnProblemQuery } from "../state/api";
+import { useGetProblemsQuery, useGetUserSolvedProblemsQuery, useGetUserDataOnProblemQuery } from "../state/api";
 import { DBProblem } from "@/types/problems";
 import React from "react";
 import { BsCheck2Circle } from "react-icons/bs";
-
-type Problem = {
-    problemId: number;
-    idTitle: string;
-    title: string;
-    difficulty: string;
-    category: string;
-    order: number;
-    description: string;
-    
-}
 
 const ITEMS_PER_PAGE = 10
 
@@ -36,10 +25,6 @@ const categories = ["Array", "Linked List", "Stack", "Binary Search"];
 
 const CardProblems = ({socket, username}: {socket: Socket | null, username: string | null}) => {
     const { data: session } = useSession(); // Get the session data
-    // const [username, setUsername] = useState<string | null>(null);
-
-    const [loading, setLoading] = useState(true);
-    // const [problems, setProblems] = useState<Problem[]>([]);
     const [searchTerm, setSearchTerm] = useState('')
     const [currentPage, setCurrentPage] = useState(1)
     const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
@@ -50,7 +35,7 @@ const CardProblems = ({socket, username}: {socket: Socket | null, username: stri
     const [selectedProblem, setSelectedProblem] = useState<DBProblem | null>(null);
     
     const { data: problems, isLoading, error } = useGetProblemsQuery();
-    const { data: solvedProblemsData, isLoading: isSolvedLoading, error: solvedError } = useGetSolvedProblemsQuery(session?.user.id!);
+    const { data: solvedProblemsData, isLoading: isSolvedLoading, error: solvedError } = useGetUserSolvedProblemsQuery(session?.user.id!);
 
     const handleProblemClick = (problem: DBProblem) => {
         setSelectedProblem(problem);
@@ -73,13 +58,11 @@ const CardProblems = ({socket, username}: {socket: Socket | null, username: stri
         setIsModalOpen(false);
     };
 
-    const problemsArray = problems?.problems || [];
-    
     if (error) {
         return <div>Error: {error.toString()}</div>;
     }
 
-    const filteredProblems = problemsArray.filter((problem: DBProblem) =>
+    const filteredProblems = problems?.filter((problem: DBProblem) =>
         problem.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
         (!selectedDifficulty || problem.difficulty === selectedDifficulty) &&
         (!selectedCategory || problem.category === selectedCategory)
@@ -112,18 +95,18 @@ const CardProblems = ({socket, username}: {socket: Socket | null, username: stri
                     onConfirm={handleConfirm}
                 />
 
-                <Card className="mb-8">
-                    <CardHeader>
-                        <CardTitle>Problem Set</CardTitle>
-                        <CardDescription>Search and filter coding challenges</CardDescription>
-                    </CardHeader>
-                    <CardContent>
+                <div className="mb-8 bg-white rounded-xl p-8 shadow-xl">
+                    <div className="mb-6">
+                        <div className="text-2xl font-semibold text-gray-900 mb-6">Problem Set</div>
+                        <div>Search and filter coding challenges</div>
+                    </div>
+                    <div>
                         <div className="flex flex-col sm:flex-row gap-4 mb-4">
                             <div className="relative flex-grow">
                                 <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
                                 <Input
                                     placeholder="Search problems..."
-                                    className="pl-8"
+                                    className="pl-8 border-gray-300 rounded-2xl"
                                     value={searchTerm}
                                     onChange={(e) => {
                                     setSearchTerm(e.target.value)
@@ -131,38 +114,38 @@ const CardProblems = ({socket, username}: {socket: Socket | null, username: stri
                                     }}
                                 />
                             </div>
-                            <Select onValueChange={(value) => setSelectedDifficulty(value === "all" ? null : value)}>
-                                <SelectTrigger className="w-[180px]">
-                                    <SelectValue placeholder="Difficulty" />
+                            <Select  onValueChange={(value) => setSelectedDifficulty(value === "all" ? null : value)}>
+                                <SelectTrigger className="w-[180px] border-gray-300 rounded-2xl">
+                                    <SelectValue className='dark:text-gray-900 text-gray-100' placeholder="Difficulty"/>
                                 </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Difficulties</SelectItem>
+                                <SelectContent className='border-gray-300 rounded-2xl bg-white'>
+                                    <SelectItem className='dark:text-gray-900 text-gray-100 hover:text-gray-100 bg-gray-100' value="all">All Difficulties</SelectItem>
                                     {difficulties.map((diff) => (
-                                        <SelectItem key={diff} value={diff}>{diff}</SelectItem>
+                                        <SelectItem className='dark:text-gray-900 text-gray-100 hover:text-gray-100 bg-gray-100' key={diff} value={diff}>{diff}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
                             <Select onValueChange={(value) => setSelectedCategory(value === "all" ? null : value)}>
-                                <SelectTrigger className="w-[180px]">
-                                    <SelectValue placeholder="Category" />
+                                <SelectTrigger className="w-[180px] border-gray-300 rounded-2xl">
+                                    <SelectValue className='dark:text-gray-900 text-gray-100' placeholder="Category" />
                                 </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Categories</SelectItem>
+                                <SelectContent className='border-gray-300 rounded-2xl dark:bg-gray-100 bg-gray-900'>
+                                    <SelectItem className='dark:text-gray-900 text-gray-100 hover:text-gray-100' value="all">All Categories</SelectItem>
                                     {categories.map((cat) => (
-                                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                                        <SelectItem className='dark:text-gray-900 text-gray-100 hover:text-gray-100' key={cat} value={cat}>{cat}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
                         </div>
 
                         <div className="overflow-x-auto">
-                            <Table>
+                            <Table >
                                 <TableHeader>
-                                    <TableRow>
-                                    <TableHead className="w-[100px]">Status</TableHead>
-                                    <TableHead>Title</TableHead>
-                                    <TableHead className="w-[100px]">Difficulty</TableHead>
-                                    <TableHead className="w-[150px]">Category</TableHead>
+                                    <TableRow className="border-b border-gray-300">
+                                        <TableHead className="w-[100px]">Status</TableHead>
+                                        <TableHead>Title</TableHead>
+                                        <TableHead className="w-[100px]">Difficulty</TableHead>
+                                        <TableHead className="w-[150px]">Category</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -175,7 +158,7 @@ const CardProblems = ({socket, username}: {socket: Socket | null, username: stri
                                             <TableRow 
                                             key={problem.problemId} 
                                             onClick={() => handleProblemClick(problem as DBProblem)} 
-                                            className="cursor-pointer hover:bg-gray-100">
+                                            className="cursor-pointer hover:bg-gray-100 border-b border-gray-300">
                                                 <TableCell>
                                                     {isSolved ? (
                                                         <div className="flex items-center">
@@ -189,7 +172,12 @@ const CardProblems = ({socket, username}: {socket: Socket | null, username: stri
                                                 </TableCell>
                                                 <TableCell className="font-medium">{problem.order}. {problem.title}</TableCell>
                                                 <TableCell>
-                                                    <Badge variant="outline">{problem.difficulty}</Badge>
+                                                    <Badge 
+                                                        // variant="outline"
+                                                        className={`${problem.difficulty === 'Easy' ? 'bg-green-500' : problem.difficulty === 'Medium' ? 'bg-yellow-500' : 'bg-red-500'} rounded-xl`}
+                                                    >
+                                                            {problem.difficulty}
+                                                    </Badge>
                                                 </TableCell>
                                                 <TableCell>{problem.category}</TableCell>
                                             </TableRow>
@@ -198,8 +186,8 @@ const CardProblems = ({socket, username}: {socket: Socket | null, username: stri
                                 </TableBody>
                             </Table>
                         </div>
-                    </CardContent>
-                    <CardFooter className="flex justify-between items-center">
+                    </div>
+                    <div className="flex pt-4 justify-between items-center">
                         <div className="text-sm text-muted-foreground">
                             Showing {startIndex + 1}-{Math.min(startIndex + ITEMS_PER_PAGE, filteredProblems?.length!)} of {filteredProblems?.length} problems
                         </div>
@@ -209,6 +197,7 @@ const CardProblems = ({socket, username}: {socket: Socket | null, username: stri
                                 size="icon"
                                 onClick={() => goToPage(currentPage - 1)}
                                 disabled={currentPage === 1}
+                                className="border-gray-300 hover:border-gray-400 rounded-3xl"
                             >
                                 <ChevronLeft className="h-4 w-4" />
                             </Button>
@@ -220,12 +209,13 @@ const CardProblems = ({socket, username}: {socket: Socket | null, username: stri
                                 size="icon"
                                 onClick={() => goToPage(currentPage + 1)}
                                 disabled={currentPage === totalPages}
+                                className="border-gray-300 hover:border-gray-400 rounded-3xl"
                             >
                                 <ChevronRight className="h-4 w-4" />
                             </Button>
                         </div>
-                    </CardFooter>
-                </Card>
+                    </div>
+                </div>
             </>             
         )
     }

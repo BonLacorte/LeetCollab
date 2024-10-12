@@ -4,6 +4,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { UsersIcon } from 'lucide-react';
 import CodeMirror from '@uiw/react-codemirror';
 import { vscodeDark, vscodeLight } from '@uiw/codemirror-theme-vscode';
+// import { python } from '@codemirror/legacy-modes/mode/python';
+import { dracula } from '@uiw/codemirror-theme-dracula';
 import { javascript } from '@codemirror/lang-javascript';
 import { useSocket } from '@/components/SocketProvider';
 import PlaygroundFooter from '@/components/workspace/PlaygroundFooter';
@@ -20,7 +22,10 @@ import TestResults from './TestResults/page';
 import { useSession } from 'next-auth/react';
 import { useAppDispatch, useAppSelector } from '@/app/redux';
 import Whiteboard from './Whiteboard/page';
-import { useUpdateUserProblemSolvedMutation } from '@/app/state/api';
+import { useCreateSubmissionMutation, useUpdateUserSolvedProblemMutation } from '@/app/state/api';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card'
+import { ScrollArea } from '@/components/ui/scroll-area';
+import Timer from '@/components/workspace/Timer';
 
 type Props = {
     roomId: string;
@@ -45,21 +50,15 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
     const [testResults, setTestResults] = useState<TestCase[] | null>(null);
     const [runtime, setRuntime] = useState<number | null>(null);
 
-    const [activeTab, setActiveTab] = useState<string>("testcase");
+    const [activeTabLeft, setActiveTabLeft] = useState<string>("testcase");
+    const [activeTabRight, setActiveTabRight] = useState<string>("chat");
 
     const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
-    const [updateUserProblemSolved] = useUpdateUserProblemSolvedMutation();
-
-    // const toggleDarkMode = () => {
-    //     dispatch(setIsDarkMode(!isDarkMode));
-    // }
+    const [updateUserSolvedProblem] = useUpdateUserSolvedProblemMutation();
+    const [createSubmission] = useCreateSubmissionMutation();
     
     useEffect(() => {
-
-        // console.log('problem on playground: ', problem);
-
         if (socket && problem) {
-            // Fetch the latest code when component mounts or page refreshes
 
             let isMounted = true;
 
@@ -69,14 +68,15 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
                     setCode(response.code);
                 }
             });
-
     
             const handleCodeChange = (newCode: string) => {
                 setCode(newCode);
             };
     
-            const handleSubmissionStart = (username: string) => {
+            const handleSubmissionStart = async (username: string, problemId: string) => {
                 // console.log("submissionStart on client", username);
+
+                
                 setIsSubmitting(true);
                 setSubmittingUser(username);
             };
@@ -87,17 +87,26 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
                 // console.log("submissionResult", result);
             };
     
-            const handleSubmissionToast = (toastData: { message: string, type: string }) => {
+            const handleSubmissionToast = async (toastData: { message: string, type: string }) => {
                 // console.log("submissionToast", toastData);
                 if (toastData.type === "success") {
                     setSuccess(true);
                     toast({
+                        className: "bg-gray-100 text-gray-900 border border-gray-100 shadow-xl rounded-xl",
                         title: toastData.type,
                         description: toastData.message,
                     });
                     setSolved(true);
                 } else {
+                    if (session?.user?.id && dbProblem?.problemId) {
+                        await createSubmission({
+                            userId: session.user.id,
+                            problemId: dbProblem.problemId,
+                            status: "Wrong Answer",
+                        }).unwrap();
+                    }
                     toast({
+                        className: "bg-gray-100 text-gray-900 border border-gray-100 shadow-xl rounded-xl",
                         title: toastData.type,
                         description: toastData.message,
                     });
@@ -107,17 +116,29 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
             const handleUpdateSolvedStatus = async (problemId: string) => {
                 console.log("updateSolvedStatus other user");
                 console.log("problemId: ", problemId);
+                // problemId = problemId.toString();
                 console.log("session.user.id: ", session?.user?.id);
                 if (session?.user?.id && problemId) {
                     try {
                         setTimeout(() => {
                             setSuccess(false);
                         }, 5000);
-                        await updateUserProblemSolved({
+                        await updateUserSolvedProblem({
                             userId: session.user.id,
                             problemId: problemId,
                         }).unwrap();
-                        console.log("updateSolvedStatus other user - solved");
+                        console.log("updateSolvedStatus (other user) - solved");
+                        console.log("updateSolvedStatus (other user) - creating submission");
+                        console.log("updateSolvedStatus (other user) - userId: ", session?.user?.id);
+                        console.log("updateSolvedStatus (other user) - problemId: ", problemId);
+                        if (session?.user?.id && problemId) {
+                            await createSubmission({
+                                userId: session.user.id,
+                                problemId: problemId,
+                                status: "Accepted",
+                            }).unwrap();
+                        }
+                        console.log("updateSolvedStatus other user - created submission");
                         setSolved(true);
                     } catch (error) {
                         console.error("Failed1 to mark problem as solved:", error);
@@ -156,19 +177,6 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
         }
     }, [socket, toast, setSuccess, setSolved, roomId, idTitle, problem]);
 
-    // this is to set the code to the starter code when the idTitle changes
-    // useEffect(() => {
-    //     if (idTitle && problems[idTitle]) {
-    //         console.log("idTitle 1: ", idTitle);
-    //         setCode(problems[idTitle].starterCode);
-
-    //         // emit codeChange event
-    //         if (socket) {
-    //             socket.emit('codeChange', { roomId, code: problems[idTitle].starterCode });
-    //         }
-    //     }
-    // }, [idTitle]);
-
     const handleCodeChange = (value: string) => {
         setCode(value);
         if (socket) {
@@ -197,13 +205,14 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
             const endTime = performance.now();
             setRuntime(Math.round(endTime - startTime));
             setTestResults(results);
-            setActiveTab("result");
+            setActiveTabLeft("result");
 
         } catch (error: any) {
             console.error('Error in handleRun:', error);
             
-            setActiveTab("result");
+            setActiveTabLeft("result");
             toast({
+                className: "bg-gray-100 text-gray-900 border border-gray-100 shadow-xl rounded-xl",
                 title: "Error",
                 description: error.message,
             });
@@ -242,6 +251,7 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
                             socket.emit('submissionMessage', { roomId, message: "Congratulations, All tests passed!", type: "success" });
                         }
                         toast({
+                            className: "bg-gray-100 text-gray-900 border border-gray-100 shadow-xl rounded-xl",
                             title: "Success!",
                             description: "Congratulations, All tests passed!",
                         });
@@ -252,10 +262,11 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
                                 setTimeout(() => {
                                     setSuccess(false);
                                 }, 5000);
-                                await updateUserProblemSolved({
+                                await updateUserSolvedProblem({
                                     userId: session.user.id,
                                     problemId: dbProblem.problemId,
                                 }).unwrap();
+                                console.log("submissionStart (handleSubmit) - updated solved status");
                                 setSolved(true);
                                 console.log("Problem marked as solved");
                             } catch (error) {
@@ -263,6 +274,7 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
                             }
                         }
                     } else {
+                        
                         throw new Error("Some tests failed");
                     }
                 } else {
@@ -270,32 +282,21 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
                 }
             } catch (error: any) {
                 if (error.message === "Some tests failed") {
+                    
                     // emit submissionFailure event
                     if (socket) {
-                        socket.emit('submissionMessage', { roomId, message: "Oops! One or more test cases failed", type: "error" });
+                        socket.emit('submissionMessage', { roomId, message: "Oops! One or more test cases failed", type: "Error" });
                     }
-                    toast({
-                        title: "Error 1",
-                        description: "Oops! One or more test cases failed",
-                    });
-                } else if (error.message.startsWith('AssertionError: Expected values to be loosely deep-equal:')) {
+                } else if (error.message.startsWith('AssertionError')) {
                     // emit submissionFailure event
                     if (socket) {
-                        socket.emit('submissionMessage', { roomId, message: "Oops! One or more test cases failed", type: "error" });
+                        socket.emit('submissionMessage', { roomId, message: "Oops! One or more test cases failed", type: "Error" });
                     }
-                    toast({
-                        title: "Error 2",
-                        description: "Oops! One or more test cases failed",
-                    });
                 } else {
                     // emit submissionFailure event
                     if (socket) {
-                        socket.emit('submissionMessage', { roomId, message: error.message, type: "error" });
+                        socket.emit('submissionMessage', { roomId, message: "Something went wrong, try again later", type: "Error" });
                     }
-                    toast({
-                        title: "Error 3",
-                        description: error.message,
-                    });
                 }
             } finally {
                 setIsSubmitting(false);
@@ -313,68 +314,111 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
     }
 
     return (
-        <div className='border-t'>
-            <PlaygroundHeader />
+        <>
+            {/* <PlaygroundHeader /> */}
             {/* <Split className='h-[calc(100vh-94px)]' direction='vertical' sizes={[60,40]} minSize={60}> */}
             {/* <div className='flex flex-col h-[calc(100vh-115px)]'> */}
-            <div className='flex flex-col h-full'>
+            <div className='flex flex-col h-full gap-8 md:pr-8'>
 
-                <div className='w-full h-[calc(38.8vh)] border overflow-auto'>
-                    <CodeMirror 
-                        // value={boilerplate}
-                        value={code}
-                        theme={isDarkMode ? vscodeDark : vscodeLight}
-                        extensions={[javascript()]}
-                        // style={{fontSize: settings.fontSize}}
-                        onChange={handleCodeChange}
-                    />
-                </div>
-                <div className='w-full h-[calc(38.8vh)] border border-l'>
-                    {/* Bottom tabs */}
-                    <div className="w-full h-full overflow-auto">
-                        <div className='flex flex-row w-full h-full'>
-                            <div className='w-3/5 border-r'>
-                                <Tabs defaultValue="testcase" value={activeTab} onValueChange={setActiveTab}>
-                                    <TabsList className='bg-gray-200'>
-                                        <TabsTrigger value="testcase" className="hover:bg-gray-300 px-4">Testcase</TabsTrigger>
-                                        <TabsTrigger value="result" className="hover:bg-gray-300 px-4">Result</TabsTrigger>
-                                        <TabsTrigger value="whiteboard" className="hover:bg-gray-300 px-4">Whiteboard</TabsTrigger>
-                                    </TabsList>
-                                    <TabsContent value="testcase" className="p-4">
-                                        <TestCases problem={problems[idTitle]} />
-                                    </TabsContent>
-                                    <TabsContent value="result" className='overflow-auto h-[35vh]'>
-                                        <TestResults results={testResults} runtime={runtime} />
-                                    </TabsContent>
-                                    <TabsContent value="whiteboard" className='h-[35vh]'>
-                                        <Whiteboard roomId={roomId} />
-                                    </TabsContent>
-                                </Tabs>
-                            </div>
-                            <div className='w-2/5'>
-                                <Tabs defaultValue="chat">
-                                    <TabsList className='bg-gray-200'>
-                                        <TabsTrigger value="chat" className='hover:bg-gray-300 px-4'>Chat</TabsTrigger>
-                                        <TabsTrigger value="members" className='hover:bg-gray-300 px-4'>Members</TabsTrigger>
-                                    </TabsList>
-                                    <TabsContent value="chat">
-                                        <Chat roomId={roomId} />
-                                    </TabsContent>
-                                    <TabsContent value="members">
-                                        <Members roomId={roomId} />
-                                    </TabsContent>
-                                </Tabs>
-                            </div>
-                        </div>
+                <Card className='w-full h-[calc(41vh)] bg-white rounded-xl shadow-md p-8 border-none'>
+                    <div className='flex flex-row justify-between items-center mb-4'>
+                        <p className='text-lg text-gray-500 font-medium rounded-3xl px-4 py-2 bg-gray-200'>Javascript</p>
+                        {/* <Timer /> */}
+                        <PlaygroundFooter handleSubmit={handleSubmit} handleRun={handleRun} />
                     </div>
+                    <ScrollArea className='h-[29vh]'>
+                        <CodeMirror 
+                            // value={boilerplate}
+                            value={code}
+                            theme={isDarkMode ? dracula : vscodeLight}
+                            extensions={[javascript()]}
+                            // style={{fontSize: settings.fontSize}}
+                            onChange={handleCodeChange}
+                        />
+                    </ScrollArea>
+                </Card>
+                <div className='w-full h-[calc(41vh)] overflow-auto'>
+                    {/* Bottom tabs */}
+                    {/* <div className="w-full h-full overflow-auto"> */}
+                    {/* <div className="w-full h-full "> */}
+                        <div className='flex flex-row w-full h-full gap-8 rounded-xl border-none'>
+                            <Card className='flex flex-col bg-white w-2/3 gap-4 p-8 border-none rounded-xl'>
+                                <div className='flex w-full justify-start'>
+                                    <div
+                                        className={`flex font-medium items-center relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
+                                            ${activeTabLeft  === "testcase" ? "text-gray-900 bg-gray-200" : "text-gray-500"}
+                                        `}
+                                        onClick={() => {
+                                            setActiveTabLeft("testcase")
+
+                                            // display the testcases
+                                            // <TestCases problem={problems[idTitle]} />
+                                        }}
+                                    >
+                                        Testcases
+                                    </div>
+                                    <div
+                                        className={`flex font-medium items-center relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
+                                            ${activeTabLeft === "result" ? "text-gray-900 bg-gray-200" : "text-gray-500"}
+                                        `}
+                                        onClick={() => setActiveTabLeft("result")}
+                                    >
+                                        Result
+                                    </div>
+                                    <div
+                                        className={`flex font-medium items-center relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
+                                            ${activeTabLeft === "whiteboard" ? "text-gray-900 bg-gray-200" : "text-gray-500"}
+                                        `}
+                                        onClick={() => setActiveTabLeft("whiteboard")}
+                                    >
+                                        Whiteboard
+                                    </div>
+                                </div>
+
+                                <div className='h-[35vh]'>
+                                    {activeTabLeft === "testcase" && <TestCases problem={problems[idTitle]} />}
+                                    {activeTabLeft === "result" && 
+                                        <ScrollArea className='h-[30vh]'>
+                                            <TestResults results={testResults} runtime={runtime} />
+                                        </ScrollArea>
+                                    }
+                                    {activeTabLeft === "whiteboard" && <Whiteboard roomId={roomId} />}
+                                </div>
+                            </Card>
+
+                            <Card className='flex flex-col bg-white w-1/3 gap-4 p-8 border-none rounded-xl'>
+                                <div className='flex w-full justify-start'>
+                                    <div className={`flex font-medium items-center relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
+                                            ${activeTabRight === "chat" ? "text-gray-900 bg-gray-200" : "text-gray-500"}
+                                        `}
+                                        onClick={() => setActiveTabRight("chat")}
+                                    >
+                                        Chat
+                                    </div>
+                                    <div className={`flex font-medium items-center relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
+                                            ${activeTabRight === "members" ? "text-gray-900 bg-gray-200" : "text-gray-500"}
+                                        `}
+                                        onClick={() => setActiveTabRight("members")}
+                                    >
+                                        Members
+                                    </div>
+                                </div>
+
+                                <div className='w-full h-full'>
+                                    {activeTabRight === "chat" && <Chat roomId={roomId} />}
+                                    {activeTabRight === "members" && <Members roomId={roomId} />}
+                                </div>
+                            </Card>
+                        </div>
+                    {/* </div> */}
                 </div>
+                
             </div>
             {/* </Split> */}
-
-            <PlaygroundFooter handleSubmit={handleSubmit} handleRun={handleRun} />
             {isSubmitting && <LoadingSubmitModal username={submittingUser} />}
+        </>
 
-        </div>
+
     )
 }
 

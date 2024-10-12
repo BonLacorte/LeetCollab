@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { io, Socket } from 'socket.io-client'; // Importing Socket.IO client
 import { useSession } from 'next-auth/react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { toast, useToast } from '@/hooks/use-toast';
 
 const CardJoinRoom = ({socket, username}: {socket: Socket | null, username: string | null}) => {
     const [roomId, setRoomId] = useState('');
@@ -43,6 +46,12 @@ const CardJoinRoom = ({socket, username}: {socket: Socket | null, username: stri
                     } else {
                         console.error(response.message);
                         setError(response.message || 'Unknown error');
+                        // toast error
+                        toast({
+                            className: "bg-gray-100 text-gray-900 border border-gray-100 shadow-xl rounded-xl",
+                            title: "Error",
+                            description: response.message,
+                        });
                     }
                 });
             }
@@ -52,24 +61,33 @@ const CardJoinRoom = ({socket, username}: {socket: Socket | null, username: stri
     };
 
     return (
-        <div className="bg-card text-card-foreground rounded-lg shadow-sm p-6">
-            <h2 className="text-2xl font-semibold mb-4">Join a Room</h2>
-            <form onSubmit={handleJoinRoom}>
-                <div>
-                    <input
-                        type="text"
-                        value={roomId}
-                        onChange={(e) => setRoomId(e.target.value)}
-                        placeholder="Enter Room ID"
-                        className=" p-2 mb-4 border rounded"
-                    />
-                    <button
-                        type="submit"
-                        className=" bg-primary text-primary-foreground py-2 rounded hover:bg-primary/90"
-                    >
-                        Join Room
-                    </button>
-                </div>
+        <div className="text-center mb-12">
+            {/* <h2 className="text-4xl font-bold text-gray-900 mb-4">Collaborate and solve coding challenges together</h2>
+            <p className="text-xl text-gray-600 mb-8">Join a room or create your own to start coding with friends</p> */}
+            <form className="flex justify-center space-x-4" onSubmit={handleJoinRoom}>
+                {/* <div> */}
+                {/* <input
+                    type="text"
+                    value={roomId}
+                    onChange={(e) => setRoomId(e.target.value)}
+                    placeholder="Enter Room ID"
+                    className=" p-2 mb-4 border rounded"
+                /> */}
+                <Input
+                    type="text"
+                    value={roomId}
+                    onChange={(e) => setRoomId(e.target.value)}
+                    placeholder="Enter Room ID"
+                    className="w-64 py-6 px-4 rounded-lg border-gray-400 outline-gray-400 placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 "
+                />
+                <Button
+                    type="submit"
+                    className="bg-gray-900 hover:bg-gray-800 text-white font-semibold py-6 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-opacity-50"
+                >
+                    Join Room
+                </Button>
+
+                {/* </div> */}
             </form>
         </div>
     );

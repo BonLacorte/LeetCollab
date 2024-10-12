@@ -6,7 +6,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import http from 'http';
 import { Server } from 'socket.io';
-import { DBProblem, Users } from '@/types/problems';
+import { DBProblem, Member } from '@/types/problems';
 import { Message } from 'postcss';
 // import userRoutes from './routes/userRoutes';
 // import problemRoutes from './routes/problemRoutes';
@@ -44,7 +44,7 @@ app.use(cors());
 // });
 
 type Room = {
-    users: Users[] | null;
+    users: Member[] | null;
     selectedProblem: DBProblem | null;
     host: string;
     code: string;
@@ -332,7 +332,8 @@ io.on('connection', (socket) => {
     // Handle submission
     socket.on('submitCode', ({ roomId, username }) => {
         if (rooms.has(roomId)) {
-            io.to(roomId).emit('submissionStart', username);
+            const room = rooms.get(roomId);
+            io.to(roomId).emit('submissionStart', username, room?.selectedProblem?.problemId);
         }
     });
 
@@ -351,7 +352,7 @@ io.on('connection', (socket) => {
         const room = rooms.get(roomId);
         if (room) {
             console.log("submissionSuccess - Updating solved status: ", problemId);
-            io.to(roomId).emit('updateSolvedStatus', { problemId });
+            io.to(roomId).emit('updateSolvedStatus', problemId );
         }
     });
 

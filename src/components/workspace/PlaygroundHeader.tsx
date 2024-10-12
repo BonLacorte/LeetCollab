@@ -9,8 +9,8 @@ const PlaygroundHeader = (props: Props) => {
 
     return (
         <div className="flex items-center justify-between">
-            <Language/>
-            <Timer/>
+            {/* <Language/>
+            <Timer/> */}
         </div>
     );
 }

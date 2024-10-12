@@ -34,7 +34,7 @@ const Timer: React.FC = () => {
 
     if (!isExpanded) {
         return (
-        <button onClick={toggleExpand} className="p-2 rounded-full hover:bg-gray-200">
+        <button onClick={toggleExpand} className="p-2 rounded-full text-gray-600 hover:bg-gray-200">
             <FiClock size={24} />
         </button>
         );
@@ -42,7 +42,7 @@ const Timer: React.FC = () => {
 
     return (
         <>
-            <div className="flex items-center space-x-2 bg-white p-2 rounded-lg shadow">
+            <div className="flex items-center space-x-2 bg-white p-2 rounded-lg shadow-md">
                 <button onClick={toggleExpand} className="p-1 rounded-full hover:bg-gray-200">
                     <FiX size={20} />
                 </button>

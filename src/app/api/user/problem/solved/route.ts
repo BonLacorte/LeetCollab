@@ -14,12 +14,12 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
 
     try {
         console.log("userId 1: ", userId);
-        console.log("problemId 1: ", problemId.problemId);
+        // console.log("problemId 1: ", problemId.problemId);
         // Check if there's an existing record
         const existingRecord = await db.solvedProblems.findFirst({
             where: {
                 userId: userId,
-                problemId: problemId.problemId,
+                problemId: problemId,
             },
         });
 

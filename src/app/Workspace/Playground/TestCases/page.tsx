@@ -21,17 +21,17 @@ const TestCases = ({ problem }: TestCasesProps) => {
         <div className="text-green-500 mr-2">✓</div>
                 <h2 className="text-lg font-semibold">Testcase</h2>
             </div> */}
-            <div className='flex'>
+            <div className='flex w-full justify-start'>
                 {problem.examples.map((example, index) => (
                     <div
-                        className='mr-2 items-start mt-2 '
+                        className=''
                         key={example.id}
                         onClick={() => setActiveTestCaseId(index)}
                     >
                         <div className='flex flex-wrap items-center gap-y-4'>
                             <div
-                                className={`font-medium items-center  relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
-                                ${activeTestCaseId === index ? "text-black" : "text-gray-500"}
+                                className={`flex font-medium items-center relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
+                                ${activeTestCaseId === index ? "text-gray-900 bg-gray-200" : "text-gray-500"}
                             `}
                             >
                                 Case {index + 1}
@@ -43,12 +43,12 @@ const TestCases = ({ problem }: TestCasesProps) => {
             </div>
             
             <div className='font-semibold'>
-                <p className='text-sm font-medium mt-4'>Input:</p>
-                <div className='w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent mt-2'>
+                <p className='text-sm font-medium mt-4 text-gray-900'>Input:</p>
+                <div className='w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent mt-2 text-gray-900'>
                     {problem.examples[activeTestCaseId].inputText}
                 </div>
-                <p className='text-sm font-medium mt-4'>Output:</p>
-                <div className='w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent mt-2'>
+                <p className='text-sm font-medium mt-4 text-gray-900'>Output:</p>
+                <div className='w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent mt-2 text-gray-900'>
                     {problem.examples[activeTestCaseId].outputText}
                 </div>
             </div>

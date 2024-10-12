@@ -20,10 +20,12 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { Button } from '../ui/button'
 
 type Props = {
     user: {
-        name?: string | null
+        name?: string | null,
+        id?: string | null
     }
 }
 
@@ -33,13 +35,13 @@ const UserAccountNav = ({ user }: Props) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <button className='bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50'>
+                <Button className='bg-gray-900 hover:bg-gray-800 text-white font-semibold py-6 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-opacity-50'>
                 {user.name}
-                </button>
+                </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
+            <DropdownMenuContent className="dark:bg-gray-100 bg-gray-100 w-56 border-gray-300 hover:border-gray-400 rounded-xl">
                 <DropdownMenuItem>
-                    <Link href="/profile" className="w-full">Profile</Link>
+                    <Link href={`/profile/${user?.id}`} className="w-full">Profile</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                     <AlertDialog>

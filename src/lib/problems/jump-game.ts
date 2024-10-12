@@ -103,5 +103,5 @@ export const jumpGame: Problem = {
 	handlerFunction: jumpGameHandler,
 	handlerRun: jumpGameRun,
 	starterFunctionName: "function canJump(",
-	order: 3,
+	order: 55,
 };

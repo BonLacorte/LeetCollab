@@ -16,6 +16,10 @@ import { useSocket } from '@/components/SocketProvider';
 import Confetti from "react-confetti";
 import { useGetProblemByIdTitleQuery } from '@/app/state/api';
 import React from 'react';
+import Description from '@/app/workspace/ProblemDescription/Description/page';
+import { Link } from 'lucide-react';
+import Image from 'next/image';
+import leetCollabLogo from '@/lib/problems/images/leetcollab-no-bg.png';
 
 interface WorkspaceProps {
     params: {
@@ -132,29 +136,6 @@ const Workspace =  ({ params }: WorkspaceProps) => {
 
     }, [socket, roomId, router]);
 
-    // const fetchProblemByIdTitle = async () => {
-    //     const response = await fetch(`http://localhost:3000/api/problem/${idTitle}/user`, {
-    //         method: "GET",
-    //     });
-    //     const data = await response.json();
-    //     // console.log("fetchProblemByIdTitle Problem: ", data);
-    //     // setIsSolved(data.isSolved);
-    //     return data;
-    // }
-
-    // const { data: ProblemByIdTitle, isLoading } = useGetProblemByIdTitleQuery(idTitle);
-    // console.log("problem by title:", ProblemByIdTitle)
-
-    // 
-    // const fetchUserProblemStatus = async () => {
-    //     const response = await fetch(`http://localhost:3000/api/problem/solved/${idTitle}`, {
-    //         method: "GET",
-    //     });
-    //     const data = await response.json();
-    //     console.log("fetchUserProblemStatus Problem: ", data);
-    //     return data;
-    // }
-
     const handleLeaveRoom = () => {
         if (socket && roomId) {
             console.log('Hello');
@@ -178,37 +159,35 @@ const Workspace =  ({ params }: WorkspaceProps) => {
 
         // <div className='border border-green-500'>
         <>
+            <div className='minh-screen'>
             {isLoading ? 
             (
                 <div><p>Loading...</p></div>
             ) : (
-            <div className='h-full'>
-                <Topbar/>
-                <h1 className="text-center text-2xl font-bold mb-4">Room ID: {roomId} | Problem ID: {idTitle} | Host: {host}</h1>
-
-                <button 
-                    onClick={handleLeaveRoom} 
-                    className="bg-red-500 px-4 py-2 rounded mb-4"
-                >
-                    Leave Room
-                </button>
-
-                {/* <Split className="split  border-black h-[calc(100vh-130px)]" minSize={0}> */}
-                <div className='flex flex-row'>
-                    {/* <ProblemDescription roomId={roomId} idTitle={idTitle} dbProblem={dbProblem as DBProblem} problem={problem as Problem} isSolved={isSolved} />   */}
-                    <div className='w-1/2 h-full'>
-                        <ProblemDescription roomId={roomId} idTitle={idTitle} dbProblem={dbProblem} problem={problem as Problem} />  
-                    </div>
+                <div className='flex flex-col gap-4 md:gap-8'>
                     
-                    <div className='w-1/2 h-full'>
-                        <Playground roomId={roomId} idTitle={idTitle} setSuccess={setSuccess} setSolved={setSolved} dbProblem={dbProblem as DBProblem} problem={problem as Problem}/>
-                        {/* <Playground roomId={roomId} idTitle={idTitle} setSuccess={setSuccess} setSolved={setSolved}/> */}
-                        {success && <Confetti gravity={0.3} tweenDuration={4000} width={width - 1} height={height - 1} />}
+                    <Topbar host={host || ''}/>
+                    <div className='md:hidden flex px-8'>
+                        <h1 className="text-2xl font-bold ">Room ID: {roomId} | Host: {host}</h1>
+                    </div>
+                    <div className='flex flex-col md:flex-row gap-8'>
+                        <div className='w-full md:w-1/2 h-[50vh] bg-white ml-8 shadow-xl rounded-xl'>
+                            <Description
+                                idTitle={idTitle}
+                                dbProblem={dbProblem}
+                                problem={problem}
+                            />
+                        </div>
+                        
+                        <div className='w-full md:w-1/2 h-full'>
+                            <Playground roomId={roomId} idTitle={idTitle} setSuccess={setSuccess} setSolved={setSolved} dbProblem={dbProblem as DBProblem} problem={problem as Problem}/>
+                            {/* <Playground roomId={roomId} idTitle={idTitle} setSuccess={setSuccess} setSolved={setSolved}/> */}
+                            {success && <Confetti gravity={0.3} tweenDuration={4000} width={width - 1} height={height - 1} />}
+                        </div>
                     </div>
                 </div>
-                {/* </Split> */}
+                )}
             </div>
-            )}
         </>
     );
 }

@@ -3,6 +3,7 @@ import { useSocket } from '@/components/SocketProvider';
 import { useGetUsername } from '@/hooks/useGetUsername';
 import { Message } from '@/types/problems';
 import { Send } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 type ChatProps = {
     roomId: string;
@@ -58,10 +59,11 @@ const Chat: React.FC<ChatProps> = ({ roomId }) => {
     };
 
     return (
-        <div className="flex flex-col overflow-auto h-[35vh]">
-            <div 
+        <div className="flex flex-col w-full h-[30vh]">
+            {/* Chat container */}
+            <ScrollArea 
                 ref={chatContainerRef}
-                className="flex-1 overflow-y-auto p-4 h-[calc(100vh-200px)]"
+                className="flex-1 overflow-y-auto px-4 py-2 h-[28vh]"
             >
                 {messages.map((message, index) => {
                     const isOwnMessage = message.sender === username;
@@ -72,24 +74,26 @@ const Chat: React.FC<ChatProps> = ({ roomId }) => {
                         {!isOwnMessage && showSender && (
                             <div className="mt-3 text-sm text-gray-500">{message.sender}</div>
                         )}
-                        <div className={`inline-block p-2 rounded-2xl ${isOwnMessage ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>
+                        <div className={`inline-block p-2 rounded-2xl ${isOwnMessage ? 'bg-gray-800 text-white' : 'bg-gray-200'} text-gray-900`}>
                             {message.content}
                         </div>
                         </div>
                     );
                 })}
                 <div ref={messagesEndRef} />
-            </div>
-            <form onSubmit={sendMessage} className="p-2 border-t">
-                <div className="flex justify-between ">
+            </ScrollArea>
+
+            {/* Chat input */}
+            <form onSubmit={sendMessage} className="border-t border-gray-200 flex justify-between w-full ">
+                <div className="flex justify-between w-full mt-2">
                     <input
                         type="text"
                         value={inputMessage}
                         onChange={(e) => setInputMessage(e.target.value)}
-                        className="flex-1 p-2 mr-2 border rounded-2xl"
+                        className="w-full p-2 mr-2 border rounded-2xl text-gray-900 bg-gray-100 border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
                         placeholder="Type a message..."
                     />
-                    <button type="submit" className="bg-gray-500 text-white p-2 rounded-2xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="submit" className="bg-gray-700 text-white p-2 rounded-full hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500">
                         <Send size={20} />
                     </button>
                 </div>

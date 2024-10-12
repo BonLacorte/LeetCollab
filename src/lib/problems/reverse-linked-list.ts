@@ -57,10 +57,11 @@ const reverseLinkedListRun = (fn: any) => {
 				// add test result
 				testResults.push({
 					case: i + 1,
-					passed: JSON.stringify(result) === JSON.stringify(answers[i]),
+					passed: getListValues(result).toString() === answers[i].toString(),
 					input: "head: " + tests[i],
 					expectedOutput: answers[i].toString(),
-					actualOutput: JSON.stringify(result)
+					// actualOutput: JSON.stringify(result)
+					actualOutput: getListValues(result).toString()
 				});
 			} catch (error: any) {
 				console.error("Error from reverseLinkedListRun: ", error);
@@ -69,10 +70,11 @@ const reverseLinkedListRun = (fn: any) => {
 				// add test result
 				testResults.push({
 					case: i + 1,
-					passed: JSON.stringify(result) === JSON.stringify(answers[i]),
+					passed: getListValues(result).toString() === answers[i].toString(),
 					input: "head: " + tests[i],
 					expectedOutput: answers[i].toString(),
-					actualOutput: JSON.stringify(result)
+					// actualOutput: JSON.stringify(result)
+					actualOutput: getListValues(result).toString()
 				});
 			}
 		}
@@ -163,5 +165,5 @@ export const reverseLinkedList: Problem = {
 	handlerFunction: reverseLinkedListHandler,
 	handlerRun: reverseLinkedListRun,
 	starterFunctionName: "function reverseLinkedList(",
-	order: 2,
+	order: 206,
 };
