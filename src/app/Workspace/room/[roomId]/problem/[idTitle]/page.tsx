@@ -1,12 +1,8 @@
-// pages/workspace/room/[roomId]/problem/[problemId]/page.tsx
 'use client';
-import ProblemDescription from '@/app/workspace/ProblemDescription/page';
+
 import Playground from '@/app/workspace/Playground/page';
-import Split from 'react-split';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
-import { useSession } from 'next-auth/react'; // Assuming you're using NextAuth
 import useWindowSize from '@/hooks/useWindowSize';
 import { DBProblem, Problem } from "@/types/problems";
 import { problems } from '@/lib/problems';
@@ -17,9 +13,6 @@ import Confetti from "react-confetti";
 import { useGetProblemByIdTitleQuery } from '@/app/state/api';
 import React from 'react';
 import Description from '@/app/workspace/ProblemDescription/Description/page';
-import { Link } from 'lucide-react';
-import Image from 'next/image';
-import leetCollabLogo from '@/lib/problems/images/leetcollab-no-bg.png';
 import { Button } from '@/components/ui/button';
 
 interface WorkspaceProps {
