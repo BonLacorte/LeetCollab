@@ -39,7 +39,7 @@ export default function RootLayout({
                 <Toaster />
             </SocketProvider>
         </Provider>
-        <FloatingAd />
+        {/* <FloatingAd /> */}
       </body>
     </html>
   );
