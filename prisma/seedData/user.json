@@ -1,111 +1,156 @@
 [
-    {
-        "userId": "f1a7eaa7-4d3f-45e3-91ad-f9e4a4f0b7f2",
-        "name": "Alice Johnson",
-        "email": "alice.johnson@example.com",
-        "username": "alice.johnson",
-        "role": "USER",
-        "password": "@Alice12345",
-        "image": "https://avatars.githubusercontent.com/u/103584313?v=4",
-        "createdAt": "2024-09-14T10:00:00Z"
-    },
-    {
-        "userId": "2c6f9460-3b42-42c4-8c3b-167d7ebaf478",
-        "name": "Bob Smith",
-        "username" : "bob.smith",
-        "email": "bob.smith@example.com",
-        "role": "USER",
-        "password": "@Bob12345",
-        "image": "https://avatars.githubusercontent.com/u/103584313?v=4",
-        "createdAt": "2024-09-14T19:00:00Z",
-        "updatedAt": "2024-09-14T19:00:00Z"
-    },
-    {
-        "userId": "3fb78d95-eabb-4f07-950b-3c23916b7468",
-        "name": "Charlie Brown",
-        "username": "charlie.brown",
-        "email": "charlie.brown@example.com",
-        "role": "USER",
-        "password": "@Charlie12345",
-        "image": "https://avatars.githubusercontent.com/u/103584313?v=4",
-        "createdAt": "2024-09-14T19:00:00Z",
-        "updatedAt": "2024-09-14T19:00:00Z"
-    },
-    {
-        "userId": "07a8f762-0223-47ec-846e-8d73c169e95a",
-        "name": "Diana Adams",
-        "username": "diana.adams",
-        "email": "diana.adams@example.com",
-        "role": "ADMIN",
-        "password": "@Diana12345",
-        "image": "https://avatars.githubusercontent.com/u/103584313?v=4",
-        "createdAt": "2024-09-14T19:00:00Z",
-        "updatedAt": "2024-09-14T19:00:00Z"
-    },
-    {
-        "userId": "8050a171-8a4e-40a2-853a-bb9196be939b",
-        "name": "Ethan Carter",
-        "username": "ethan.carter",
-        "email": "ethan.carter@example.com",
-        "role": "USER",
-        "password": "@Ethan12345",
-        "image": "https://avatars.githubusercontent.com/u/103584313?v=4",
-        "createdAt": "2024-09-14T19:00:00Z",
-        "updatedAt": "2024-09-14T19:00:00Z"
-    },
-    {
-        "userId": "392fdcdf-c67b-45df-9391-9e9d76f2e4d7",
-        "name": "Fiona Davis",
-        "username": "fiona.davis",
-        "email": "fiona.davis@example.com",
-        "role": "USER",
-        "password": "@Fiona12345",
-        "image": "https://avatars.githubusercontent.com/u/103584313?v=4",
-        "createdAt": "2024-09-14T19:00:00Z",
-        "updatedAt": "2024-09-14T19:00:00Z"
-    },
-    {
-        "userId": "bc26868d-b83d-4708-b7b9-c84d29bce3f3",
-        "name": "George Evans",
-        "username": "george.evans",
-        "email": "george.evans@example.com",
-        "role": "ADMIN",
-        "password": "@George12345",
-        "image": "https://avatars.githubusercontent.com/u/103584313?v=4",
-        "createdAt": "2024-09-14T19:00:00Z",
-        "updatedAt": "2024-09-14T19:00:00Z"
-    },
-    {
-        "userId": "4d53d89f-91a2-4296-8e98-df57b13650bb",
-        "name": "Hannah Garcia",
-        "username": "hannah.garcia",
-        "email": "hannah.garcia@example.com",
-        "role": "USER",
-        "password": "@Hannah12345",
-        "image": "https://avatars.githubusercontent.com/u/103584313?v=4",
-        "createdAt": "2024-09-14T19:00:00Z",
-        "updatedAt": "2024-09-14T19:00:00Z"
-    },
-    {
-        "userId": "81eb5f79-890f-4f96-80b1-bf22cc8ec1ed",
-        "name": "Ian Hamilton",
-        "username": "ian.hamilton",
-        "email": "ian.hamilton@example.com",
-        "role": "USER",
-        "password": "@Ian12345",
-        "image": "https://avatars.githubusercontent.com/u/103584313?v=4",
-        "createdAt": "2024-09-14T19:00:00Z",
-        "updatedAt": "2024-09-14T19:00:00Z"
-    },
-    {
-        "userId": "a61a35e2-8425-4059-9dbb-04824f9b2d7b",
-        "name": "Bon Lacorte",
-        "username": "bon.lacorte",
-        "email": "bon.lacorte@example.com",
-        "role": "ADMIN",
-        "password": "@BonLacorte123",
-        "image": "https://avatars.githubusercontent.com/u/103584313?v=4",
-        "createdAt": "2024-09-14T19:00:00Z",
-        "updatedAt": "2024-09-14T19:00:00Z"
-    }
+  {
+    "userId": "f8ebcc7b-9381-4f33-a970-5e7af66f1b77",
+    "name": "costa",
+    "username": "costa123",
+    "email": "costa123@gmail.com",
+    "role": "USER",
+    "password": "$2a$10$.GS1s.g5IjrPTA2L9p9imuDzOknawp.uWEu2r3txL.J1syxNRsZfy",
+    "image": "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+    "createdAt": "22/09/2024 16:49",
+    "updatedAt": "13/10/2024 6:58"
+  },
+  {
+    "userId": "07a8f762-0223-47ec-846e-8d73c169e95a",
+    "name": "Diana Adams",
+    "username": "diana.adams",
+    "email": "diana.adams@example.com",
+    "role": "ADMIN",
+    "password": "@Diana12345",
+    "image": "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+    "createdAt": "14/09/2024 19:00",
+    "updatedAt": "14/09/2024 19:00"
+  },
+  {
+    "userId": "46d11fea-f131-48a3-afc9-5dc4629e6f75",
+    "name": "bon",
+    "username": "bon123",
+    "email": "bon123@gmail.com",
+    "role": "USER",
+    "password": "$2b$10$FkhOF.X/XRzRcgrRfd9H3eriIDFKIeP5PuJiD73MaZ71/Tw2suZMO",
+    "image": "https://scontent.fmnl4-4.fna.fbcdn.net/v/t39.30808-1/461952289_8789322231099658_5594834372754610207_n.jpg?stp=dst-jpg_p160x160&_nc_cat=102&ccb=1-7&_nc_sid=0ecb9b&_nc_eui2=AeFZYaQjNWIch7B7Ia8XVwhrRS9jPJk5NkVFL2M8mTk2RWsAn2sxFtPthpC8ZKlswSqYJxFJQF3oZFYhpiAdad-3&_nc_ohc=Y5dbiambWPMQ7kNvgER7-M8&_nc_ht=scontent.fmnl4-4.fna&_nc_gid=A1oYTuPkXllD-C_am_ohwGs&oh=00_AYD3w0kArrm0QIgQxhvELQQyFZ-5WVAp77yGxWYqDKQ5Qw&oe=670EAC5A",
+    "createdAt": "22/09/2024 16:34",
+    "updatedAt": "22/09/2024 16:34"
+  },
+  {
+    "userId": "2c6f9460-3b42-42c4-8c3b-167d7ebaf478",
+    "name": "Bob Smith",
+    "username": "bob.smith",
+    "email": "bob.smith@example.com",
+    "role": "USER",
+    "password": "@Bob12345",
+    "image": "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+    "createdAt": "14/09/2024 19:00",
+    "updatedAt": "14/09/2024 19:00"
+  },
+  {
+    "userId": "392fdcdf-c67b-45df-9391-9e9d76f2e4d7",
+    "name": "Fiona Davis",
+    "username": "fiona.davis",
+    "email": "fiona.davis@example.com",
+    "role": "USER",
+    "password": "@Fiona12345",
+    "image": "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+    "createdAt": "14/09/2024 19:00",
+    "updatedAt": "14/09/2024 19:00"
+  },
+  {
+    "userId": "3fb78d95-eabb-4f07-950b-3c23916b7468",
+    "name": "Charlie Brown",
+    "username": "charlie.brown",
+    "email": "charlie.brown@example.com",
+    "role": "USER",
+    "password": "@Charlie12345",
+    "image": "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+    "createdAt": "14/09/2024 19:00",
+    "updatedAt": "14/09/2024 19:00"
+  },
+  {
+    "userId": "4d53d89f-91a2-4296-8e98-df57b13650bb",
+    "name": "Hannah Garcia",
+    "username": "hannah.garcia",
+    "email": "hannah.garcia@example.com",
+    "role": "USER",
+    "password": "@Hannah12345",
+    "image": "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+    "createdAt": "14/09/2024 19:00",
+    "updatedAt": "14/09/2024 19:00"
+  },
+  {
+    "userId": "8050a171-8a4e-40a2-853a-bb9196be939b",
+    "name": "Ethan Carter",
+    "username": "ethan.carter",
+    "email": "ethan.carter@example.com",
+    "role": "USER",
+    "password": "@Ethan12345",
+    "image": "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+    "createdAt": "14/09/2024 19:00",
+    "updatedAt": "14/09/2024 19:00"
+  },
+  {
+    "userId": "81eb5f79-890f-4f96-80b1-bf22cc8ec1ed",
+    "name": "Ian Hamilton",
+    "username": "ian.hamilton",
+    "email": "ian.hamilton@example.com",
+    "role": "USER",
+    "password": "@Ian12345",
+    "image": "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+    "createdAt": "14/09/2024 19:00",
+    "updatedAt": "14/09/2024 19:00"
+  },
+  {
+    "userId": "a61a35e2-8425-4059-9dbb-04824f9b2d7b",
+    "name": "Bon Lacorte",
+    "username": "bon.lacorte",
+    "email": "bon.lacorte@example.com",
+    "role": "ADMIN",
+    "password": "@BonLacorte123",
+    "image": "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+    "createdAt": "14/09/2024 19:00",
+    "updatedAt": "14/09/2024 19:00"
+  },
+  {
+    "userId": "bc26868d-b83d-4708-b7b9-c84d29bce3f3",
+    "name": "George Evans",
+    "username": "george.evans",
+    "email": "george.evans@example.com",
+    "role": "ADMIN",
+    "password": "@George12345",
+    "image": "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+    "createdAt": "14/09/2024 19:00",
+    "updatedAt": "14/09/2024 19:00"
+  },
+  {
+    "userId": "f1a7eaa7-4d3f-45e3-91ad-f9e4a4f0b7f2",
+    "name": "Alice Johnson",
+    "username": "alice.johnson",
+    "email": "alice.johnson@example.com",
+    "role": "USER",
+    "password": "@Alice12345",
+    "image": "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+    "createdAt": "14/09/2024 10:00",
+    "updatedAt": "22/09/2024 15:29"
+  },
+  {
+    "userId": "4fa8f26f-a224-481d-9bee-f9032405f0cf",
+    "name": "test21",
+    "username": "test21",
+    "email": "test20@gmail.com",
+    "role": "USER",
+    "password": "$2a$10$9SrL15qnnhCP8v8keZBZVOf76xS9sRwL6OEs/Wp8hMwthGCYG5D0q",
+    "image": "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+    "createdAt": "23/09/2024 16:13",
+    "updatedAt": "13/10/2024 7:40"
+  },
+  {
+    "userId": "1b045f70-170f-41a1-b3cf-055d55221ded",
+    "name": "bon lacorte",
+    "username": "booon",
+    "email": "bonbonlacorte123@gmail.com",
+    "role": "USER",
+    "password": "$2a$10$tb6Gu6gYKCDLvZU4t9sAkOqiS7HLSmX2Ylcvrgmwg54dQcB8w0/6G",
+    "image": "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+    "createdAt": "13/10/2024 8:45",
+    "updatedAt": "13/10/2024 8:45"
+  }
 ]

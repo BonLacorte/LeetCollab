@@ -1,15 +1,17 @@
+'use client'
+
 import React, { useState, useEffect } from 'react';
 import { useSocket } from '@/components/SocketProvider';
 import { Mic, MicOff, User } from 'lucide-react';
 import { useGetUsername } from '@/hooks/useGetUsername';
-import { Users } from '@/types/problems';
+import { Member } from '@/types/problems';
 
 type MembersProps = {
     roomId: string;
 };
 
 const Members: React.FC<MembersProps> = ({ roomId }) => {
-    const [members, setMembers] = useState<Users[]>([]);
+    const [members, setMembers] = useState<Member[]>([]);
     const socket = useSocket();
     const currentUsername = useGetUsername();
     const [isHost, setIsHost] = useState(false);
@@ -17,12 +19,12 @@ const Members: React.FC<MembersProps> = ({ roomId }) => {
     useEffect(() => {
         if (socket) {
             
-            socket.emit('getRoomMembers', { roomId }, (roomMembers: Users[]) => {
+            socket.emit('getRoomMembers', { roomId }, (roomMembers: Member[]) => {
                 setMembers(roomMembers);
             });
 
             
-            socket.on('updateMembers', (updatedMembers: Users[]) => {
+            socket.on('updateMembers', (updatedMembers: Member[]) => {
                 setMembers(updatedMembers);
             });
 

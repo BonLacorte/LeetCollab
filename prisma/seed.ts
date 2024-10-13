@@ -33,6 +33,7 @@ async function main() {
         "likedProblems.json",
         "solvedProblems.json",
         "starredProblems.json",
+        "submission.json",
     ];
 
     await deleteAllData(orderedFileNames);

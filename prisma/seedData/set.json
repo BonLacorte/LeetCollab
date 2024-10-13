@@ -1,20 +1,20 @@
 [
-    {
-        "setId": "076a4956-60c2-4b73-b275-530359a91cba",
-        "setTitle": "Beginner Problems",
-        "createdAt": "2024-09-14T19:00:00Z",
-        "updatedAt": "2024-09-14T19:00:00Z"
-    },
-    {
-        "setId": "8b2c1e60-a2d5-4b8b-a914-e2e66ae6b56c",
-        "setTitle": "Intermediate Problems",
-        "createdAt": "2024-09-14T19:00:00Z",
-        "updatedAt": "2024-09-14T19:00:00Z"
-    },
-    {
-        "setId": "a85a6979-76de-4dc7-8fbe-34fa51a9b8e4",
-        "setTitle": "Advanced Problems",
-        "createdAt": "2024-09-14T19:00:00Z",
-        "updatedAt": "2024-09-14T19:00:00Z"
-    }
+  {
+    "setId": "076a4956-60c2-4b73-b275-530359a91cba",
+    "setTitle": "Beginner Problems",
+    "createdAt": "14/09/2024 19:00",
+    "updatedAt": "14/09/2024 19:00"
+  },
+  {
+    "setId": "8b2c1e60-a2d5-4b8b-a914-e2e66ae6b56c",
+    "setTitle": "Intermediate Problems",
+    "createdAt": "14/09/2024 19:00",
+    "updatedAt": "14/09/2024 19:00"
+  },
+  {
+    "setId": "a85a6979-76de-4dc7-8fbe-34fa51a9b8e4",
+    "setTitle": "Advanced Problems",
+    "createdAt": "14/09/2024 19:00",
+    "updatedAt": "14/09/2024 19:00"
+  }
 ]

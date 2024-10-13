@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useSocket } from '@/components/SocketProvider';
 import { useGetUsername } from '@/hooks/useGetUsername';

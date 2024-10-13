@@ -1,23 +1,30 @@
 [
-    {
-        "starredProblemId": "8f2d4eb4-85db-4b84-9175-65b1c5d5dc17",
-        "userId": "07a8f762-0223-47ec-846e-8d73c169e95a",
-        "problemId": "076a4956-60c2-4b73-b275-530359a91cba",
-        "createdAt": "2024-09-14T19:00:00Z",
-        "updatedAt": "2024-09-14T19:00:00Z"
-    },
-    {
-        "starredProblemId": "20694f7c-9458-4dc2-b394-4cc7e72ff960",
-        "userId": "07a8f762-0223-47ec-846e-8d73c169e95a",
-        "problemId": "0e980d1b-ae93-4a5a-b235-4dfea5f42860",
-        "createdAt": "2024-09-14T19:00:00Z",
-        "updatedAt": "2024-09-14T19:00:00Z"
-    },
-    {
-        "starredProblemId": "4dfbcb8d-0f75-4d96-939a-3cc9ae315c42",
-        "userId": "07a8f762-0223-47ec-846e-8d73c169e95a",
-        "problemId": "076a4956-60c2-4b73-b275-530359a91cba",
-        "createdAt": "2024-09-14T19:00:00Z",
-        "updatedAt": "2024-09-14T19:00:00Z"
-    }
+  {
+    "starredProblemId": "8f2d4eb4-85db-4b84-9175-65b1c5d5dc17",
+    "userId": "07a8f762-0223-47ec-846e-8d73c169e95a",
+    "problemId": "076a4956-60c2-4b73-b275-530359a91cba",
+    "createdAt": "14/09/2024 19:00",
+    "updatedAt": "14/09/2024 19:00"
+  },
+  {
+    "starredProblemId": "20694f7c-9458-4dc2-b394-4cc7e72ff960",
+    "userId": "07a8f762-0223-47ec-846e-8d73c169e95a",
+    "problemId": "0e980d1b-ae93-4a5a-b235-4dfea5f42860",
+    "createdAt": "14/09/2024 19:00",
+    "updatedAt": "14/09/2024 19:00"
+  },
+  {
+    "starredProblemId": "2fc2ca29-0efe-46cb-880c-19179cbc63e2",
+    "userId": "f8ebcc7b-9381-4f33-a970-5e7af66f1b77",
+    "problemId": "0e980d1b-ae93-4a5a-b235-4dfea5f42860",
+    "createdAt": "13/10/2024 1:13",
+    "updatedAt": "13/10/2024 1:13"
+  },
+  {
+    "starredProblemId": "98b6dde0-2fdf-434f-8e88-81ea53cbda4b",
+    "userId": "1b045f70-170f-41a1-b3cf-055d55221ded",
+    "problemId": "d4e5f6g7-h8i9j0-k1l2m3n4-o5p6q7r8s9",
+    "createdAt": "13/10/2024 8:56",
+    "updatedAt": "13/10/2024 8:56"
+  }
 ]

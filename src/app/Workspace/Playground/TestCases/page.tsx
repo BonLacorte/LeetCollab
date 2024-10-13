@@ -1,3 +1,4 @@
+'use client'
 import { problems } from '@/lib/problems'
 import React, { useState } from 'react'
 import { Problem } from '@/types/problems'
