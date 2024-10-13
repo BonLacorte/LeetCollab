@@ -92,7 +92,7 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
                 if (toastData.type === "success") {
                     setSuccess(true);
                     toast({
-                        className: "bg-gray-100 text-gray-900 border border-gray-100 shadow-xl rounded-xl",
+                        className: "bg-white text-gray-900 border border-gray-200 shadow-xl rounded-xl",
                         title: toastData.type,
                         description: toastData.message,
                     });
@@ -106,7 +106,7 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
                         }).unwrap();
                     }
                     toast({
-                        className: "bg-gray-100 text-gray-900 border border-gray-100 shadow-xl rounded-xl",
+                        className: "bg-white text-gray-900 border border-gray-200 shadow-xl rounded-xl",
                         title: toastData.type,
                         description: toastData.message,
                     });
@@ -212,7 +212,7 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
             
             setActiveTabLeft("result");
             toast({
-                className: "bg-gray-100 text-gray-900 border border-gray-100 shadow-xl rounded-xl",
+                className: "bg-white text-gray-900 border border-gray-200 shadow-xl rounded-xl",
                 title: "Error",
                 description: error.message,
             });
@@ -251,7 +251,7 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
                             socket.emit('submissionMessage', { roomId, message: "Congratulations, All tests passed!", type: "success" });
                         }
                         toast({
-                            className: "bg-gray-100 text-gray-900 border border-gray-100 shadow-xl rounded-xl",
+                            className: "bg-white text-gray-900 border border-gray-200 shadow-xl rounded-xl",
                             title: "Success!",
                             description: "Congratulations, All tests passed!",
                         });
@@ -318,9 +318,9 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
             {/* <PlaygroundHeader /> */}
             {/* <Split className='h-[calc(100vh-94px)]' direction='vertical' sizes={[60,40]} minSize={60}> */}
             {/* <div className='flex flex-col h-[calc(100vh-115px)]'> */}
-            <div className='flex flex-col h-full gap-8 md:pr-8'>
+            <div className='flex flex-col h-full gap-8 lg:pr-8'>
 
-                <Card className='w-full h-[calc(41vh)] bg-white rounded-xl shadow-md p-8 border-none'>
+                <Card className='w-full h-[41vh] bg-white rounded-xl shadow-md p-8 border-none'>
                     <div className='flex flex-row justify-between items-center mb-4'>
                         <p className='text-lg text-gray-500 font-medium rounded-3xl px-4 py-2 bg-gray-200'>Javascript</p>
                         {/* <Timer /> */}
@@ -337,15 +337,15 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
                         />
                     </ScrollArea>
                 </Card>
-                <div className='w-full h-[calc(41vh)] overflow-auto'>
+                <div className='w-full h-full lg:h-[calc(41vh)] overflow-auto'>
                     {/* Bottom tabs */}
                     {/* <div className="w-full h-full overflow-auto"> */}
                     {/* <div className="w-full h-full "> */}
-                        <div className='flex flex-row w-full h-full gap-8 rounded-xl border-none'>
-                            <Card className='flex flex-col bg-white w-2/3 gap-4 p-8 border-none rounded-xl'>
+                        <div className='flex flex-col xl:flex-row w-full h-full gap-8 rounded-xl border-none'>
+                            <Card className='flex flex-col bg-white w-full xl:w-2/3 gap-4 p-8 border-none rounded-xl'>
                                 <div className='flex w-full justify-start'>
                                     <div
-                                        className={`flex font-medium items-center relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
+                                        className={`flex items-center relative text-sm font-medium rounded-2xl px-4 py-2 cursor-pointer whitespace-nowrap
                                             ${activeTabLeft  === "testcase" ? "text-gray-900 bg-gray-200" : "text-gray-500"}
                                         `}
                                         onClick={() => {
@@ -358,7 +358,7 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
                                         Testcases
                                     </div>
                                     <div
-                                        className={`flex font-medium items-center relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
+                                        className={`flex items-center relative text-sm font-medium rounded-2xl px-4 py-2 cursor-pointer whitespace-nowrap
                                             ${activeTabLeft === "result" ? "text-gray-900 bg-gray-200" : "text-gray-500"}
                                         `}
                                         onClick={() => setActiveTabLeft("result")}
@@ -366,7 +366,7 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
                                         Result
                                     </div>
                                     <div
-                                        className={`flex font-medium items-center relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
+                                        className={`flex items-center relative text-sm font-medium rounded-2xl px-4 py-2 cursor-pointer whitespace-nowrap
                                             ${activeTabLeft === "whiteboard" ? "text-gray-900 bg-gray-200" : "text-gray-500"}
                                         `}
                                         onClick={() => setActiveTabLeft("whiteboard")}
@@ -382,20 +382,30 @@ const Playground = ({ roomId, idTitle, setSuccess, setSolved, dbProblem, problem
                                             <TestResults results={testResults} runtime={runtime} />
                                         </ScrollArea>
                                     }
-                                    {activeTabLeft === "whiteboard" && <Whiteboard roomId={roomId} />}
+                                    {activeTabLeft === "whiteboard" && 
+                                        <div className='h-[30vh]'>
+                                            <div className="block md:hidden">
+                                                <p className="text-lg text-gray-900 font-semibold mb-2">This feature is not available for mobile phones</p>
+                                            </div>
+                                            <div className="hidden md:block h-full">
+                                                <Whiteboard roomId={roomId} />
+                                            </div>
+                                        </div>
+                                    }
+                                        
                                 </div>
                             </Card>
 
-                            <Card className='flex flex-col bg-white w-1/3 gap-4 p-8 border-none rounded-xl'>
+                            <Card className='flex flex-col bg-white w-full xl:w-1/3 gap-4 p-8 border-none rounded-xl'>
                                 <div className='flex w-full justify-start'>
-                                    <div className={`flex font-medium items-center relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
+                                    <div className={`flex items-center relative text-sm font-medium rounded-2xl px-4 py-2 cursor-pointer whitespace-nowrap
                                             ${activeTabRight === "chat" ? "text-gray-900 bg-gray-200" : "text-gray-500"}
                                         `}
                                         onClick={() => setActiveTabRight("chat")}
                                     >
                                         Chat
                                     </div>
-                                    <div className={`flex font-medium items-center relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
+                                    <div className={`flex items-center relative text-sm font-medium rounded-2xl px-4 py-2 cursor-pointer whitespace-nowrap
                                             ${activeTabRight === "members" ? "text-gray-900 bg-gray-200" : "text-gray-500"}
                                         `}
                                         onClick={() => setActiveTabRight("members")}

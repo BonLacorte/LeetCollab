@@ -1,4 +1,4 @@
-import { useGetUserSubmissionsQuery } from '@/app/state/api';
+import { useGetUserStarredProblemsQuery } from '@/app/state/api';
 import { DBProblem } from '@/types/problems';
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { useSession } from 'next-auth/react';
@@ -14,34 +14,40 @@ type Props = {}
 
 const ITEMS_PER_PAGE = 10
 
-const CardSubmissions = (props: Props) => {
+const difficulties = ["Easy", "Medium", "Hard"];
+const categories = ["Array", "Linked List", "Stack", "Binary Search", "Dynamic Programming", "Graph", "Tree", "Math", "String", "Sliding Window", "Two Pointers", "Binary Search Tree", "Heap", "Greedy", "Backtracking", "Divide and Conquer", "Bit Manipulation", "Segment Tree", "Binary Indexed Tree", "Recursion", "Game Theory", "Combinatorics", "Geometry", "Interactive", "String Matching", "Rolling Hash", "Suffix Array", "Trie", "Data Stream", "Sorting"];
+
+const CardStarredProblems = (props: Props) => {
+    
     const { data: session } = useSession(); // Get the session data
     const [searchTerm, setSearchTerm] = useState('')
     const [currentPage, setCurrentPage] = useState(1)
+    const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-    const { data: submissions, isLoading: submissionsLoading, error: submissionsError } = useGetUserSubmissionsQuery(session?.user.id!);
+    const { data: starredProblems, isLoading: starredProblemsLoading, error: starredProblemsError } = useGetUserStarredProblemsQuery(session?.user.id!);
 
-    console.log(submissions)
-
-    if (submissionsError) {
-        return <div>Error: {submissionsError.toString()}</div>;
+    if (starredProblemsError) {
+        return <div>Error: {starredProblemsError.toString()}</div>;
     }
 
-    const filteredSubmissions = submissions?.filter((submission: any) =>
-        submission.problem.problemId.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredStarredProblems = starredProblems?.filter((problem: any) =>
+        problem.problem.problemId.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        (!selectedDifficulty || problem.problem.difficulty === selectedDifficulty) &&
+        (!selectedCategory || problem.problem.category === selectedCategory)
     );
 
-    const totalPages = Math.ceil(filteredSubmissions?.length! / ITEMS_PER_PAGE)
+    const totalPages = Math.ceil(filteredStarredProblems?.length! / ITEMS_PER_PAGE)
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
-    const paginatedSubmissions = filteredSubmissions?.slice(startIndex, startIndex + ITEMS_PER_PAGE)
+    const paginatedStarredProblems = filteredStarredProblems?.slice(startIndex, startIndex + ITEMS_PER_PAGE)
 
     const goToPage = (page: number) => {
-        setCurrentPage(Math.max(1, Math.min(page, totalPages)))
+        setCurrentPage(page)
     }
 
     return (
         <div className="container mx-auto">
-        {submissionsLoading ? (
+        {starredProblemsLoading ? (
             <div><p>Loading...</p></div>
         ) : (
             <>
@@ -52,7 +58,7 @@ const CardSubmissions = (props: Props) => {
                     </CardHeader> */}
                     <div>
                         <div className="flex flex-col sm:flex-row gap-4 mb-4">
-                            {/* <div className="relative flex-grow">
+                            <div className="relative flex-grow">
                                 <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
                                 <Input
                                     placeholder="Search problems..."
@@ -63,8 +69,8 @@ const CardSubmissions = (props: Props) => {
                                     setCurrentPage(1)  // Reset to first page on search
                                     }}
                                 />
-                            </div> */}
-                            {/* <Select onValueChange={(value) => setSelectedDifficulty(value === "all" ? null : value)}>
+                            </div>
+                            <Select onValueChange={(value) => setSelectedDifficulty(value === "all" ? null : value)}>
                                 <SelectTrigger className="w-[180px] border-gray-300 rounded-2xl">
                                     <SelectValue className='dark:text-gray-900 text-gray-100' placeholder="Difficulty"/>
                                 </SelectTrigger>
@@ -85,22 +91,21 @@ const CardSubmissions = (props: Props) => {
                                         <SelectItem className='dark:text-gray-900 text-gray-100 hover:text-gray-100' key={cat} value={cat}>{cat}</SelectItem>
                                     ))}
                                 </SelectContent>
-                            </Select> */}
+                            </Select>
                         </div>
 
                         <div className="overflow-x-auto">
                             <Table>
                                 <TableHeader>
                                     <TableRow className="hover:bg-gray-100">
-                                    <TableHead className="w-[100px]">Time Submitted</TableHead>
-                                    <TableHead>Title</TableHead>
-                                    <TableHead className="w-[100px]">Status</TableHead>
-                                    <TableHead className="w-[150px]">Language</TableHead>
+                                        <TableHead>Title</TableHead>
+                                        <TableHead className="w-[100px]">Category</TableHead>
+                                        <TableHead className="w-[150px]">Difficulty</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                {paginatedSubmissions?.map((submission: any) => {
-                                    const problem = submission.problem;  // Access the nested problem object
+                                {paginatedStarredProblems?.map((starredProblem: any) => {
+                                    const problem = starredProblem.problem;  // Access the nested problem object
                                     
                                     return(
                                         <TableRow 
@@ -111,17 +116,17 @@ const CardSubmissions = (props: Props) => {
                                                     <BsCheck2Circle className="text-green-500 mr-2" />
                                                     <span className="text-green-500">Solved</span>
                                                 </div> */}
-                                                {new Date(submission.createdAt).toLocaleString()}
+                                                {problem.order}. {problem.title}
                                             </TableCell>
                                             <TableCell className="font-medium">{problem.order}. {problem.title}</TableCell>
                                             <TableCell>
                                                 <Badge 
-                                                    className={`${submission.status === 'Accepted' ? 'bg-green-500' : submission.status === 'Wrong Answer' ? 'bg-red-500' : 'bg-yellow-500'} rounded-xl flex items-center justify-center`}
+                                                    className={`${problem.difficulty === 'Easy' ? 'bg-green-500' : problem.difficulty === 'Medium' ? 'bg-yellow-500' : 'bg-red-500'} rounded-xl`}
                                                 >
-                                                    {submission.status === 'Accepted' ? 'Accepted' : submission.status === 'Wrong Answer' ? 'Wrong' : 'TLE'}
+                                                    {problem.difficulty}
                                                 </Badge>
                                             </TableCell>
-                                            <TableCell>Javascript</TableCell>
+                                            <TableCell>{problem.category}</TableCell>
                                         </TableRow>
                                     )
                                 })}
@@ -131,7 +136,7 @@ const CardSubmissions = (props: Props) => {
                     </div>
                     <div className="flex justify-between items-center">
                         <div className="text-sm text-muted-foreground">
-                            Showing {startIndex + 1}-{Math.min(startIndex + ITEMS_PER_PAGE, filteredSubmissions?.length!)} of {filteredSubmissions?.length} problems
+                            Showing {startIndex + 1}-{Math.min(startIndex + ITEMS_PER_PAGE, filteredStarredProblems?.length!)} of {filteredStarredProblems?.length} problems
                         </div>
                         <div className="flex items-center space-x-2">
                             <Button
@@ -164,4 +169,4 @@ const CardSubmissions = (props: Props) => {
     )
 }
 
-export default CardSubmissions
+export default CardStarredProblems

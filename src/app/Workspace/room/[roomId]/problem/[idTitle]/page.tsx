@@ -20,6 +20,7 @@ import Description from '@/app/workspace/ProblemDescription/Description/page';
 import { Link } from 'lucide-react';
 import Image from 'next/image';
 import leetCollabLogo from '@/lib/problems/images/leetcollab-no-bg.png';
+import { Button } from '@/components/ui/button';
 
 interface WorkspaceProps {
     params: {
@@ -162,16 +163,30 @@ const Workspace =  ({ params }: WorkspaceProps) => {
             <div className='minh-screen'>
             {isLoading ? 
             (
-                <div><p>Loading...</p></div>
+                <div className='flex justify-center items-center min-h-screen'>
+                    <div className="flex flex-col justify-center items-center">
+                        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+                        <p className='text-lg font-medium text-gray-900 mt-4'>Loading...</p>
+                    </div>
+                </div>
             ) : (
-                <div className='flex flex-col gap-4 md:gap-8'>
+                <div className='flex flex-col gap-4 lg:gap-8'>
                     
                     <Topbar host={host || ''}/>
-                    <div className='md:hidden flex px-8'>
+
+                    <div className='lg:hidden flex justify-between px-8'>
                         <h1 className="text-2xl font-bold ">Room ID: {roomId} | Host: {host}</h1>
+                        <div>
+                            <Button 
+                                onClick={handleLeaveRoom} 
+                                className="bg-gray-900 hover:bg-gray-800 text-white font-semibold py-6 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-opacity-50"
+                            >
+                                Leave Room
+                            </Button>
+                        </div>
                     </div>
-                    <div className='flex flex-col md:flex-row gap-8'>
-                        <div className='w-full md:w-1/2 h-[50vh] bg-white ml-8 shadow-xl rounded-xl'>
+                    <div className='flex flex-col lg:flex-row gap-8 mx-8 lg:mx-0'>
+                        <div className='w-full lg:w-1/2 h-full lg:h-[50vh] bg-white lg:ml-8 shadow-xl rounded-xl'>
                             <Description
                                 idTitle={idTitle}
                                 dbProblem={dbProblem}
@@ -179,7 +194,7 @@ const Workspace =  ({ params }: WorkspaceProps) => {
                             />
                         </div>
                         
-                        <div className='w-full md:w-1/2 h-full'>
+                        <div className='w-full lg:w-1/2 h-full'>
                             <Playground roomId={roomId} idTitle={idTitle} setSuccess={setSuccess} setSolved={setSolved} dbProblem={dbProblem as DBProblem} problem={problem as Problem}/>
                             {/* <Playground roomId={roomId} idTitle={idTitle} setSuccess={setSuccess} setSolved={setSolved}/> */}
                             {success && <Confetti gravity={0.3} tweenDuration={4000} width={width - 1} height={height - 1} />}

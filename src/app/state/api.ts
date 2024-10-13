@@ -47,10 +47,17 @@ export interface Submission {
     createdAt: Date;
 }
 
+export interface UpdateUserProfile {
+    name: string;
+    username: string;
+    email: string;
+    image: string;
+}
+
 export const api = createApi({
     baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_URL }),
     reducerPath: "api",
-    tagTypes: ["Problems", "ProblemByIdTitle", "UserDataOnProblem", "UserSolvedProblems", "UserLikedProblem", "UserStarredProblem", "UserSubmission", "UserProfile", "UserRankAndAcceptanceRate"],
+    tagTypes: ["Problems", "ProblemByIdTitle", "UserDataOnProblem", "UserSolvedProblems", "UserLikedProblem", "UserStarredProblem", "UserSubmission", "UserProfile", "UserRankAndAcceptanceRate", "UpdateUserProfile"],
     endpoints: (build) => ({
         getProblems: build.query<DBProblem[], void>({
             query: () => "api/problem/",
@@ -80,6 +87,10 @@ export const api = createApi({
         getUserSubmissions: build.query<Submission[], string>({
             query: (userId: string) => `api/user/problem/submission/${userId}`,
             providesTags: ["UserSubmission"],
+        }),
+        getUserStarredProblems: build.query<any[], string>({
+            query: (userId: string) => `api/user/problem/starred/${userId}`,
+            providesTags: ["UserStarredProblem"],
         }),
         getUserProfile: build.query<User, string>({
             query: (userId: string) => `api/user/${userId}`,
@@ -113,6 +124,14 @@ export const api = createApi({
             }),
             invalidatesTags: ["UserStarredProblem"],
         }),
+        updateUserProfile: build.mutation<void, { userId: string; patch: UpdateUserProfile }>({
+            query: ({ userId, ...patch }) => ({
+                url: `/api/user`,
+                method: 'PUT',
+                body: patch,
+            }),
+            invalidatesTags: ["UserProfile"],
+        }),
         createSubmission: build.mutation<void, { userId: string; problemId: string; status: string }>({
             query: ({ userId, problemId, status }) => ({
                 url: `api/user/problem/submission`,
@@ -124,4 +143,4 @@ export const api = createApi({
     }),
 });
 
-export const { useGetProblemsQuery, useGetProblemByIdTitleQuery, useGetUserDataOnProblemQuery, useGetUserSolvedProblemsQuery, useGetUserSubmissionsQuery, useUpdateUserSolvedProblemMutation, useUpdateUserLikedProblemMutation, useUpdateUserStarredProblemMutation, useCreateSubmissionMutation, useGetUserProfileQuery, useGetUserRankAndAcceptanceRateQuery } = api;
+export const { useGetProblemsQuery, useGetProblemByIdTitleQuery, useGetUserDataOnProblemQuery, useGetUserSolvedProblemsQuery, useGetUserSubmissionsQuery, useGetUserStarredProblemsQuery, useLazyGetUserProfileQuery, useUpdateUserSolvedProblemMutation, useUpdateUserLikedProblemMutation, useUpdateUserStarredProblemMutation, useCreateSubmissionMutation, useGetUserProfileQuery, useGetUserRankAndAcceptanceRateQuery, useUpdateUserProfileMutation } = api;

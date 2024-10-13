@@ -1,6 +1,6 @@
 'use client'
 
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import React, { useState } from 'react'
 import Link from 'next/link'
 import {
@@ -21,6 +21,8 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from '../ui/button'
+import { useRouter } from 'next/navigation';
+import { useGetUserProfileQuery } from '@/app/state/api'
 
 type Props = {
     user: {
@@ -30,45 +32,55 @@ type Props = {
 }
 
 const UserAccountNav = ({ user }: Props) => {
-    const [isOpen, setIsOpen] = useState(false)
+    const [isAlertOpen, setIsAlertOpen] = useState(false)
+    const router = useRouter();
+
+    const handleSignOut = () => {
+        signOut({
+            redirect: true,
+            callbackUrl: `${window.location.origin}/sign-in`
+        })
+    }
+
+    const { data: userProfile, isLoading: userProfileIsLoading, error: userProfileError } = useGetUserProfileQuery(user?.id || '');
+
+    const { data: session } = useSession();
 
     return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button className='bg-gray-900 hover:bg-gray-800 text-white font-semibold py-6 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-opacity-50'>
-                {user.name}
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="dark:bg-gray-100 bg-gray-100 w-56 border-gray-300 hover:border-gray-400 rounded-xl">
-                <DropdownMenuItem>
-                    <Link href={`/profile/${user?.id}`} className="w-full">Profile</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <button className="w-full text-left">Sign out</button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>Are you sure you want to sign out?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                You will be redirected to the sign-in page.
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => signOut({
-                                    redirect: true,
-                                    callbackUrl: `${window.location.origin}/sign-in`
-                                    })}>
-                                    Sign out
-                                </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
+        <>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button className='bg-gray-900 hover:bg-gray-800 text-white font-semibold py-6 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-opacity-50'>
+                        {userProfile?.username}
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="dark:bg-gray-100 bg-gray-100 w-56 border-gray-300 rounded-xl">
+                    <DropdownMenuItem>
+                        <Link href={`/profile/${user?.id}`} className="w-full">Profile</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => setIsAlertOpen(true)}>
+                        Sign out
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+
+            <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure you want to sign out?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            You will be redirected to the sign-in page.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel onClick={() => setIsAlertOpen(false)}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleSignOut}>
+                            Sign out
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </>
     )
 }
 

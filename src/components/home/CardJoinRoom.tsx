@@ -48,7 +48,7 @@ const CardJoinRoom = ({socket, username}: {socket: Socket | null, username: stri
                         setError(response.message || 'Unknown error');
                         // toast error
                         toast({
-                            className: "bg-gray-100 text-gray-900 border border-gray-100 shadow-xl rounded-xl",
+                            className: "bg-white text-gray-900 border border-gray-200 shadow-xl rounded-xl",
                             title: "Error",
                             description: response.message,
                         });
@@ -79,6 +79,7 @@ const CardJoinRoom = ({socket, username}: {socket: Socket | null, username: stri
                     onChange={(e) => setRoomId(e.target.value)}
                     placeholder="Enter Room ID"
                     className="w-64 py-6 px-4 rounded-lg border-gray-400 outline-gray-400 placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 "
+                    required
                 />
                 <Button
                     type="submit"

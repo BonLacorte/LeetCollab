@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation';
 import { io, Socket } from 'socket.io-client'; // Importing Socket.IO client
 import ConfirmationModal from "./ConfirmationModal";
 import { useSession } from 'next-auth/react'; // Assuming you're using NextAuth
-import { useGetProblemsQuery, useGetUserSolvedProblemsQuery, useGetUserDataOnProblemQuery } from "../state/api";
+import { useGetProblemsQuery, useGetUserSolvedProblemsQuery, useGetUserDataOnProblemQuery } from "../../app/state/api";
 import { DBProblem } from "@/types/problems";
 import React from "react";
 import { BsCheck2Circle } from "react-icons/bs";
@@ -141,7 +141,7 @@ const CardProblems = ({socket, username}: {socket: Socket | null, username: stri
                         <div className="overflow-x-auto">
                             <Table >
                                 <TableHeader>
-                                    <TableRow className="border-b border-gray-300">
+                                    <TableRow className="hover:bg-gray-100 border-b border-gray-300">
                                         <TableHead className="w-[100px]">Status</TableHead>
                                         <TableHead>Title</TableHead>
                                         <TableHead className="w-[100px]">Difficulty</TableHead>
@@ -197,7 +197,7 @@ const CardProblems = ({socket, username}: {socket: Socket | null, username: stri
                                 size="icon"
                                 onClick={() => goToPage(currentPage - 1)}
                                 disabled={currentPage === 1}
-                                className="border-gray-300 hover:border-gray-400 rounded-3xl"
+                                className="bg-gray-100 border-gray-300 hover:border-gray-400 rounded-3xl"
                             >
                                 <ChevronLeft className="h-4 w-4" />
                             </Button>
@@ -209,7 +209,7 @@ const CardProblems = ({socket, username}: {socket: Socket | null, username: stri
                                 size="icon"
                                 onClick={() => goToPage(currentPage + 1)}
                                 disabled={currentPage === totalPages}
-                                className="border-gray-300 hover:border-gray-400 rounded-3xl"
+                                className="bg-gray-100 border-gray-300 hover:border-gray-400 rounded-3xl"
                             >
                                 <ChevronRight className="h-4 w-4" />
                             </Button>

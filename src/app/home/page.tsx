@@ -5,8 +5,8 @@ import { getServerSession } from "next-auth";
 import { redirect, useRouter } from "next/navigation";
 import Link from "next/link";
 import axios from "axios";
-import CardProblems from "./CardProblems";
-import CardJoinRoom from "./CardJoinRoom";
+import CardProblems from "../../components/home/CardProblems";
+import CardJoinRoom from "../../components/home/CardJoinRoom";
 import { io, Socket } from 'socket.io-client'; // Importing Socket.IO client
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -18,6 +18,7 @@ import leetCollabLogo from '@/lib/problems/images/leetcollab-no-bg.png';
 import Image from "next/image";
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { Socket as ClientSocket } from 'socket.io-client';
 
 const Homepage = () => {
 

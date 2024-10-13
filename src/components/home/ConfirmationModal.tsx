@@ -20,7 +20,7 @@ type Props = {
 const ConfirmationModal: React.FC<Props> = ({ isOpen, onClose, onConfirm }) => {
     return (
         <AlertDialog open={isOpen} onOpenChange={onClose}>
-            <AlertDialogContent className='border-none rounded-2xl shadow-xl'>
+            <AlertDialogContent className='bg-gray-100 rounded-2xl shadow-xl'>
                 <AlertDialogHeader>
                     <AlertDialogTitle>Create a Room?</AlertDialogTitle>
                     <AlertDialogDescription>

@@ -12,6 +12,7 @@ const userSchema = z.object({
     username: z.string().min(1, { message: "Username is required" }),
     password: z.string().min(6, { message: "Password must be at least 6 characters long" }),
     confirmPassword: z.string().min(6, { message: "Password must be at least 6 characters long" }),
+    image: z.string().optional(),
 });
 
 // Create a new user
@@ -19,7 +20,7 @@ export async function POST(req: Request) {
     try {
         const body = await req.json();
 
-        const { name, email, username, password, confirmPassword } = userSchema.parse(body);
+        const { name, email, username, password, confirmPassword, image } = userSchema.parse(body);
 
         // console.log(name, email, username, password, confirmPassword)
 
@@ -50,7 +51,7 @@ export async function POST(req: Request) {
         const hashedPassword = await bcryptjs.hash(password, 10);
 
         const newUser = await db.user.create({
-            data: { name, email, username, password: hashedPassword }
+            data: { name, email, username, password: hashedPassword, image }
         })
         
         const { password: newUserPassword, ...rest } = newUser;
@@ -67,4 +68,56 @@ export const GET = async (req: Request) => {
     const session = await getServerSession(authOptions)
 
     return NextResponse.json({ authenticated: !!session })
+}
+
+// Update user profile
+export async function PUT(req: Request) {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.id) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        const body = await req.json();
+        const { name, username, email } = body;
+
+        // Fetch the current user data
+        const currentUser = await db.user.findUnique({
+            where: { userId: session.user.id },
+        });
+
+        if (!currentUser) {
+            return NextResponse.json({ error: "User not found" }, { status: 404 });
+        }
+
+        // Prepare the update data
+        const updateData: any = {};
+
+        if (name && name !== currentUser.name) {
+            updateData.name = name;
+        }
+
+        if (username && username !== currentUser.username) {
+            updateData.username = username;
+        }
+
+        if (email && email !== currentUser.email) {
+            updateData.email = email;
+        }
+
+        // Only update if there are changes
+        if (Object.keys(updateData).length > 0) {
+            const updatedUser = await db.user.update({
+                where: { userId: session.user.id },
+                data: updateData,
+            });
+
+            return NextResponse.json({ user: updatedUser }, { status: 200 });
+        } else {
+            return NextResponse.json({ message: "No changes to update" }, { status: 200 });
+        }
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
+    }
 }

@@ -270,7 +270,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
                 onMouseMove={draw}
                 onWheel={handleZoom}
                 onContextMenu={(e) => e.preventDefault()}
-                className="border border-gray-300 flex-grow cursor-crosshair"
+                className="border border-gray-300 cursor-crosshair"
             />
         </div>
     );

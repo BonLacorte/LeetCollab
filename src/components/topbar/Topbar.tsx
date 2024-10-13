@@ -31,6 +31,7 @@ const Topbar = ({ host }: { host: string }) => {
     
     const dispatch = useAppDispatch();
     const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+    const { data: session } = useSession();
     const toggleDarkMode = () => {
         dispatch(setIsDarkMode(!isDarkMode));
     }
@@ -126,18 +127,18 @@ const Topbar = ({ host }: { host: string }) => {
             
             {/* LEFT SIDE */}
             <div className='w-1/2 flex flex-row justify-between items-center gap-4'>
-                <Link href='/' className='hidden md:flex'>
+                <Link href='/' className=''>
                     {/* Leetcode logo */}
                     <div className='flex col items-center space-x-2'>
                         <Image src={leetCollabLogo} alt="Leetcode" width={24} height={24} />
-                        <h1 className="text-3xl font-bold text-gray-900">LeetCollab</h1>
+                        <h1 className="text-3xl font-bold text-gray-900 hidden md:flex">LeetCollab</h1>
                     </div>
                 </Link>
 
                 {isWorkspacePage && (
                     <div className='w-1/2 flex gap-4 flex-1'>
                         <button 
-                            className={`flex items-center justify-center px-4 py-2 rounded-3xl transition-all duration-300 ${
+                            className={`flex items-center justify-center md:px-4 px-2 py-2 rounded-3xl transition-all duration-300 ${
                                 isHost 
                                     ? 'bg-gray-900 hover:bg-gray-800  text-white cursor-pointer' 
                                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -145,12 +146,14 @@ const Topbar = ({ host }: { host: string }) => {
                             onClick={() => isHost && handleProblemChange(false)}
                             disabled={!isHost}
                         >
-                            <FaChevronLeft className="mr-2" />
-                            <span className="font-medium">Prev</span>
+                            <FaChevronLeft className="md:mr-2" />
+                            <span className="hidden md:block font-medium">Prev</span>
                         </button>
-                        <Timer />
+                        <div className='hidden md:flex'>
+                            <Timer />
+                        </div>
                         <button 
-                            className={`flex items-center justify-center px-4 py-2 rounded-3xl transition-all duration-300 ${
+                            className={`flex items-center justify-center md:px-4 px-2 py-2 rounded-3xl transition-all duration-300 ${
                                 isHost 
                                     ? 'bg-gray-900 hover:bg-gray-800  text-white cursor-pointer' 
                                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -158,8 +161,8 @@ const Topbar = ({ host }: { host: string }) => {
                             onClick={() => isHost && handleProblemChange(true)}
                             disabled={!isHost}
                         >
-                            <span className="font-medium">Next</span>
-                            <FaChevronRight className="ml-2" />
+                            <span className="hidden md:block font-medium">Next</span>
+                            <FaChevronRight className="md:ml-2" />
                         </button>
                     </div>
                 )}
@@ -170,10 +173,10 @@ const Topbar = ({ host }: { host: string }) => {
 
             {/* RIGHT SIDE */}
             <div className="w-1/2 flex justify-end items-center gap-5">
-                <div className='flex-col hidden md:flex'>
+                <div className='flex-col hidden lg:flex'>
                     <h1 className="text-2xl font-bold ">Room ID: {roomId} | Host: {host}</h1>
                 </div>
-                <div>
+                <div className='flex-col hidden lg:flex'>
                     <Button 
                         onClick={handleLeaveRoom} 
                         className="bg-gray-900 hover:bg-gray-800 text-white font-semibold py-6 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-opacity-50"
@@ -182,7 +185,7 @@ const Topbar = ({ host }: { host: string }) => {
                     </Button>
                 </div>
 
-                <hr className="w-0 h-7 border border-solid border-l border-gray-300 mx-3" />
+                <hr className="hidden lg:block w-0 h-7 border border-solid border-l border-gray-300 mx-3" />
 
                 <div>
                     {/* <Sun className="cursor-pointer text-gray-500" size={24} /> */}
@@ -200,9 +203,8 @@ const Topbar = ({ host }: { host: string }) => {
                 <hr className="w-0 h-7 border border-solid border-l border-gray-300 mx-3" />
 
                 <div className='flex items-center space-x-4'>
-                    {/* Add your existing navbar items here */}
                     {username ? (
-                        <UserAccountNav user={{ name: username }} />
+                        <UserAccountNav user={{ name: username, id: session?.user?.id }} />
                     ) : (
                         <Link href="/sign-in">
                             <button className='bg-gray-900 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded-2xl shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-opacity-50'>
@@ -213,146 +215,6 @@ const Topbar = ({ host }: { host: string }) => {
                 </div>
             </div>
         </div>
-        // <nav className='bg-white shadow-md'>
-        //     <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-        //         <div className='flex justify-between h-16'>
-        //             <div className='flex'>
-        //                 <Link href='/' className='flex-shrink-0 flex items-center'>
-        //                     <Image src={leetCollabLogo} alt="LeetCollab" width={24} height={24} />
-        //                     <h1 className="text-xl font-bold text-gray-900 ml-2 hidden sm:block">LeetCollab</h1>
-        //                 </Link>
-        //             </div>
-
-        //             {isWorkspacePage && (
-        //                 <div className='hidden md:flex items-center space-x-4'>
-        //                     <button 
-        //                         className={`flex items-center justify-center px-3 py-1 rounded-full transition-all duration-300 ${
-        //                             isHost 
-        //                                 ? 'bg-gray-900 hover:bg-gray-800 text-white cursor-pointer' 
-        //                                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-        //                         }`}
-        //                         onClick={() => isHost && handleProblemChange(false)}
-        //                         disabled={!isHost}
-        //                     >
-        //                         <FaChevronLeft className="mr-1" />
-        //                         <span className="text-sm">Prev</span>
-        //                     </button>
-        //                     <Timer />
-        //                     <button 
-        //                         className={`flex items-center justify-center px-3 py-1 rounded-full transition-all duration-300 ${
-        //                             isHost 
-        //                                 ? 'bg-gray-900 hover:bg-gray-800 text-white cursor-pointer' 
-        //                                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-        //                         }`}
-        //                         onClick={() => isHost && handleProblemChange(true)}
-        //                         disabled={!isHost}
-        //                     >
-        //                         <span className="text-sm">Next</span>
-        //                         <FaChevronRight className="ml-1" />
-        //                     </button>
-        //                 </div>
-        //             )}
-
-        //             <div className='hidden md:flex items-center space-x-4'>
-        //                 <p className="text-sm text-gray-600">Room: {roomId} | Host: {host}</p>
-        //                 <Button 
-        //                     onClick={handleLeaveRoom} 
-        //                     className="bg-gray-900 hover:bg-gray-800 text-white text-sm py-1 px-3 rounded-lg"
-        //                 >
-        //                     Leave Room
-        //                 </Button>
-        //                 <button onClick={toggleDarkMode}>
-        //                     {isDarkMode ? (
-        //                         <Sun className="cursor-pointer text-gray-500" size={20} />
-        //                     ) : (
-        //                         <Moon className="cursor-pointer text-gray-500" size={20} />
-        //                     )}
-        //                 </button>
-        //                 {username ? (
-        //                     <UserAccountNav user={{ name: username }} />
-        //                 ) : (
-        //                     <Link href="/sign-in">
-        //                         <button className='bg-gray-900 hover:bg-gray-800 text-white text-sm py-1 px-3 rounded-lg'>
-        //                             Sign In
-        //                         </button>
-        //                     </Link>
-        //                 )}
-        //             </div>
-
-        //             <div className='md:hidden flex items-center'>
-        //                 <button
-        //                     onClick={() => setIsMenuOpen(!isMenuOpen)}
-        //                     className='inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500'
-        //                 >
-        //                     <Menu className="h-6 w-6" aria-hidden="true" />
-        //                 </button>
-        //             </div>
-        //         </div>
-        //     </div>
-
-        //     {isMenuOpen && (
-        //         <div className='md:hidden'>
-        //             <div className='px-2 pt-2 pb-3 space-y-1 sm:px-3'>
-        //                 {isWorkspacePage && (
-        //                     <div className='flex justify-center space-x-2 mb-2'>
-        //                         <button 
-        //                             className={`flex items-center justify-center px-2 py-1 rounded-full text-xs transition-all duration-300 ${
-        //                                 isHost 
-        //                                     ? 'bg-gray-900 hover:bg-gray-800 text-white cursor-pointer' 
-        //                                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-        //                             }`}
-        //                             onClick={() => isHost && handleProblemChange(false)}
-        //                             disabled={!isHost}
-        //                         >
-        //                             <FaChevronLeft className="mr-1" />
-        //                             Prev
-        //                         </button>
-        //                         <Timer />
-        //                         <button 
-        //                             className={`flex items-center justify-center px-2 py-1 rounded-full text-xs transition-all duration-300 ${
-        //                                 isHost 
-        //                                     ? 'bg-gray-900 hover:bg-gray-800 text-white cursor-pointer' 
-        //                                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-        //                             }`}
-        //                             onClick={() => isHost && handleProblemChange(true)}
-        //                             disabled={!isHost}
-        //                         >
-        //                             Next
-        //                             <FaChevronRight className="ml-1" />
-        //                         </button>
-        //                     </div>
-        //                 )}
-        //                 <p className="text-sm text-gray-600 text-center">Room: {roomId} | Host: {host}</p>
-        //                 <div className='flex justify-center'>
-        //                     <Button 
-        //                         onClick={handleLeaveRoom} 
-        //                         className="bg-gray-900 hover:bg-gray-800 text-white text-sm py-1 px-3 rounded-lg"
-        //                     >
-        //                         Leave Room
-        //                     </Button>
-        //                 </div>
-        //                 <div className='flex justify-center space-x-4'>
-        //                     <button onClick={toggleDarkMode}>
-        //                         {isDarkMode ? (
-        //                             <Sun className="cursor-pointer text-gray-500" size={20} />
-        //                         ) : (
-        //                             <Moon className="cursor-pointer text-gray-500" size={20} />
-        //                         )}
-        //                     </button>
-        //                     {username ? (
-        //                         <UserAccountNav user={{ name: username }} />
-        //                     ) : (
-        //                         <Link href="/sign-in">
-        //                             <button className='bg-gray-900 hover:bg-gray-800 text-white text-sm py-1 px-3 rounded-lg'>
-        //                                 Sign In
-        //                             </button>
-        //                         </Link>
-        //                     )}
-        //                 </div>
-        //             </div>
-        //         </div>
-        //     )}
-        // </nav>
     );
 }
 

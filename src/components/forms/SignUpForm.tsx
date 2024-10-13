@@ -5,6 +5,10 @@ import { useRouter } from 'next/navigation';
 import { z } from 'zod'
 import { useToast } from '@/hooks/use-toast'
 import Link from 'next/link';
+import leetcollabLogo from '@/lib/problems/images/leetcollab-no-bg.png'
+import Image from 'next/image';
+import { Input } from '../ui/input';
+import { Button } from '../ui/button';
 
 type Props = {}
 
@@ -32,6 +36,7 @@ const SignUpForm = (props: Props) => {
         username: '',
         password: '',
         confirmPassword: '',
+        image: 'https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg',
     });
     const [errors, setErrors] = useState<Partial<SignUpFormData>>({});
 
@@ -68,7 +73,7 @@ const SignUpForm = (props: Props) => {
                 toast({
                     title: 'Error',
                     description: "Something went wrong",
-                    variant: 'destructive',
+                    className: "bg-white text-gray-900 border border-gray-200 shadow-xl rounded-xl"
                 })
                 const data = await res.json();
                 setErrors({ email: data.error || 'An error occurred' });
@@ -94,104 +99,106 @@ const SignUpForm = (props: Props) => {
     const errorCssStyles = "text-red-500 text-sm mt-1";
 
     return (
-        <div className="flex flex-col items-center">
-            <div className="mb-6">
-                {/* <img src="" alt="Logo" className="w-12 h-12 border-2 border-gray-500 rounded-full" /> */}
-                <h2 className="text-2xl font-bold mt-2">Sign up</h2>
-            </div>
-            <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                    {/* Name */}
-                    <label htmlFor="name" className={labelCssStyles}>
-                        Name
-                    </label>
-                    <input
-                        type='text'
-                        name='name'
-                        value={formData.name}
-                        placeholder='Name'
-                        onChange={handleChange}
-                        className={inputCssStyles}
-                        required
-                    />
-                    {errors.name && <p className={errorCssStyles}>{errors.name}</p>}
-
-                    {/* Email */}
-                    <label htmlFor="email" className={labelCssStyles}>
-                        Email
-                    </label>
-                    <input
-                        type='email'
-                        name='email'
-                        value={formData.email}
-                        placeholder='Email'
-                        onChange={handleChange}
-                        className={inputCssStyles}
-                        required
-                    />
-                    {errors.email && <p className={errorCssStyles}>{errors.email}</p>}   
-
-                    {/* Username */}
-                    <label htmlFor="username" className={labelCssStyles}>
-                        Username
-                    </label>
-                    <input
-                        type='text'
-                        name='username'
-                        value={formData.username}
-                        placeholder='Username'
-                        onChange={handleChange}
-                        className={inputCssStyles}
-                        required
-                    />
-                    {errors.username && <p className={errorCssStyles}>{errors.username}</p>}
-
-                    {/* Password */}
-                    <label htmlFor="password" className={labelCssStyles}>
-                        Password
-                    </label>
-                    <input
-                        type='password'
-                        name='password'
-                        value={formData.password}
-                        placeholder='Password'
-                        onChange={handleChange}
-                        className={inputCssStyles}
-                        required
-                    />
-                    {errors.password && <p className={errorCssStyles}>{errors.password}</p>}
-
-                    {/* Confirm Password */}
-                    <label htmlFor="confirmPassword" className={labelCssStyles}>
-                        Confirm Password
-                    </label>
-                    <input
-                        type='password'
-                        name='confirmPassword'
-                        value={formData.confirmPassword}
-                        placeholder='Confirm Password'
-                        onChange={handleChange}
-                        className={inputCssStyles}
-                        required
-                    />
-                    {errors.confirmPassword && <p className={errorCssStyles}>{errors.confirmPassword}</p>}
+        <div className='flex justify-center items-center min-h-screen bg-gray-100'>
+            <div className="flex flex-col items-center bg-white p-16 rounded-xl shadow-xl w-full md:w-3/5 xl:w-2/5">
+                <div className="mb-6">
+                    <Image src={leetcollabLogo} alt="Logo" width={50} height={50} />
                 </div>
+                <h2 className="text-2xl font-bold mb-8">Sign up</h2>
+                <form onSubmit={handleSubmit} className='w-full'>
+                    <div className="flex flex-col gap-4 mb-8">
+                        {/* Name */}
+                        <div className='flex flex-col gap-2'>
+                            <label htmlFor="name" className={labelCssStyles}>
+                                Name
+                            </label>
+                            <Input
+                                type='text'
+                                name='name'
+                                value={formData.name}
+                                placeholder='Name'
+                                onChange={handleChange}
+                                // required
+                            />
+                            {errors.name && <p className={errorCssStyles}>{errors.name}</p>}
+                        </div>
 
-                <button type="submit" className="w-full bg-black text-white font-semibold py-2 px-4 rounded-md mb-4">
-                    Continue
-                </button>
+                        {/* Email */}
+                        <div className='flex flex-col gap-2'>
+                            <label htmlFor="email" className={labelCssStyles}>
+                                Email
+                            </label>
+                            <Input
+                                type='email'
+                                name='email'
+                                value={formData.email}
+                                placeholder='Email'
+                                onChange={handleChange}
+                                // required
+                            />
+                            {errors.email && <p className={errorCssStyles}>{errors.email}</p>}   
+                        </div>
 
-                <div className="text-center text-sm text-gray-500 mb-4">OR</div>
+                        {/* Username */}
+                        <div className='flex flex-col gap-2'>
+                            <label htmlFor="username" className={labelCssStyles}>
+                                Username
+                            </label>
+                            <Input
+                                type='text'
+                                name='username'
+                                value={formData.username}
+                                placeholder='Username'
+                                onChange={handleChange}
+                                // required
+                            />
+                            {errors.username && <p className={errorCssStyles}>{errors.username}</p>}
+                        </div>
 
-                <button type="button" className="w-full border border-gray-300 text-black font-semibold py-2 px-4 rounded-md mb-2 flex items-center justify-center">
-                    <img src="/google-icon.png" alt="Google" className="w-5 h-5 mr-2" />
-                    Continue with Google
-                </button>
+                        {/* Password */}
+                        <div className='flex flex-col gap-2'>
+                            <label htmlFor="password" className={labelCssStyles}>
+                                Password
+                            </label>
+                            <Input
+                                type='password'
+                                name='password'
+                                value={formData.password}
+                                placeholder='Password'
+                                onChange={handleChange}
+                                // required
+                            />
+                            {errors.password && <p className={errorCssStyles}>{errors.password}</p>}
+                        </div>
 
-                <p className="text-center text-sm text-gray-600">
-                    Already have an account? <Link href="/sign-in" className="text-blue-600 hover:underline">Sign in</Link>
-                </p>
-            </form>
+                        {/* Confirm Password */}
+                        <div className='flex flex-col gap-2'>
+                            <label htmlFor="confirmPassword" className={labelCssStyles}>
+                                Confirm Password
+                            </label>
+                            <Input
+                                type='password'
+                                name='confirmPassword'
+                                value={formData.confirmPassword}
+                                placeholder='Confirm Password'
+                                onChange={handleChange}
+                                // required
+                            />
+                            {errors.confirmPassword && <p className={errorCssStyles}>{errors.confirmPassword}</p>}
+                        </div>
+                    </div>
+
+                    <div className='flex justify-center w-full'>
+                        <Button type="submit" className="w-full items-center bg-gray-900 hover:bg-gray-800 text-white font-semibold py-6 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-opacity-50">
+                            Continue
+                        </Button>
+                    </div>
+
+                    <p className="text-center text-sm text-gray-600 mt-4">
+                        Already have an account? <Link href="/sign-in" className="text-blue-600 hover:underline">Sign in</Link>
+                    </p>
+                </form>
+            </div>
         </div>
     )
 }

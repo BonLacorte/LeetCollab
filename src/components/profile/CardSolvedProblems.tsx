@@ -11,7 +11,9 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Search, Filter, ChevronLeft, ChevronRight } from "lucide-react"
-import ConfirmationModal from '@/app/home/ConfirmationModal';
+import ConfirmationModal from '@/components/home/ConfirmationModal';
+import { useSocket } from '../SocketProvider';
+import { useGetUsername } from "@/hooks/useGetUsername";
 // import { io, Socket } from 'socket.io-client'; // Importing Socket.IO client
 
 
@@ -20,7 +22,7 @@ type Props = {}
 const ITEMS_PER_PAGE = 10
 
 const difficulties = ["Easy", "Medium", "Hard"];
-const categories = ["Array", "Linked List", "Stack", "Binary Search"];
+const categories = ["Array", "Linked List", "Stack", "Binary Search", "Dynamic Programming", "Graph", "Tree", "Math", "String", "Sliding Window", "Two Pointers", "Binary Search Tree", "Heap", "Greedy", "Backtracking", "Divide and Conquer", "Bit Manipulation", "Segment Tree", "Binary Indexed Tree", "Recursion", "Game Theory", "Combinatorics", "Geometry", "Interactive", "String Matching", "Rolling Hash", "Suffix Array", "Trie", "Data Stream", "Sorting"];
 
 const CardSolvedProblems = (props: Props) => {
     const { data: session } = useSession(); // Get the session data
@@ -28,11 +30,11 @@ const CardSolvedProblems = (props: Props) => {
     const [currentPage, setCurrentPage] = useState(1)
     const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-    
+    const username = useGetUsername();
     const router = useRouter();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedProblem, setSelectedProblem] = useState<DBProblem | null>(null);
-
+    const socket = useSocket();
     const { data: solvedProblems, isLoading, error } = useGetUserSolvedProblemsQuery(session?.user.id!);    
 
     const handleProblemClick = (problem: DBProblem) => {
@@ -40,21 +42,21 @@ const CardSolvedProblems = (props: Props) => {
         setIsModalOpen(true);
     };
 
-    // const handleConfirm = () => {
-    //     if (selectedProblem && socket) {
-    //         const roomId = Math.random().toString(36).substring(7); // Generate random roomId
+    const handleConfirm = () => {
+        if (selectedProblem && socket) {
+            const roomId = Math.random().toString(36).substring(7); // Generate random roomId
 
-    //         socket.emit('createRoom', { roomId, username, selectedProblem }, (response: any) => {
-    //             // console.log("createRoom username: ", username);
-    //             if (response.success) {
-    //                 router.push(`workspace/room/${roomId}/problem/${selectedProblem.idTitle}`);
-    //             } else {
-    //                 console.error(response.message);
-    //             }
-    //         });
-    //     }
-    //     setIsModalOpen(false);
-    // };
+            socket.emit('createRoom', { roomId, username, selectedProblem }, (response: any) => {
+                // console.log("createRoom username: ", username);
+                if (response.success) {
+                    router.push(`/workspace/room/${roomId}/problem/${selectedProblem.idTitle}`);
+                } else {
+                    console.error(response.message);
+                }
+            });
+        }
+        setIsModalOpen(false);
+    };
 
     if (error) {
         return <div>Error: {error.toString()}</div>;
@@ -84,13 +86,13 @@ const CardSolvedProblems = (props: Props) => {
             <div><p>Loading...</p></div>
         ) : (
             <>
-                {/* <ConfirmationModal
+                <ConfirmationModal
                     isOpen={isModalOpen}
                     onClose={() => setIsModalOpen(false)}
                     onConfirm={handleConfirm}
-                /> */}
+                />
 
-                <div className="mb-8 rounded-lg ">
+                <div className="rounded-lg ">
                     {/* <CardHeader>
                         <CardTitle className="text-2xl font-semibold text-gray-900 mb-6">Problem Set</CardTitle>
                         <CardDescription>Search and filter coding challenges</CardDescription>
@@ -104,8 +106,9 @@ const CardSolvedProblems = (props: Props) => {
                                     className="pl-8 border-gray-300 rounded-2xl"
                                     value={searchTerm}
                                     onChange={(e) => {
-                                    setSearchTerm(e.target.value)
-                                    setCurrentPage(1)  // Reset to first page on search
+                                        console.log("searchTerm: ", e.target.value)
+                                        setSearchTerm(e.target.value)
+                                        setCurrentPage(1)  // Reset to first page on search
                                     }}
                                 />
                             </div>
@@ -136,11 +139,11 @@ const CardSolvedProblems = (props: Props) => {
                         <div className="overflow-x-auto">
                             <Table>
                                 <TableHeader>
-                                    <TableRow>
-                                    <TableHead className="w-[100px]">Status</TableHead>
-                                    <TableHead>Title</TableHead>
-                                    <TableHead className="w-[100px]">Difficulty</TableHead>
-                                    <TableHead className="w-[150px]">Category</TableHead>
+                                    <TableRow className="hover:bg-gray-100">
+                                        <TableHead className="w-[100px]">Status</TableHead>
+                                        <TableHead>Title</TableHead>
+                                        <TableHead className="w-[100px]">Difficulty</TableHead>
+                                        <TableHead className="w-[150px]">Category</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -151,7 +154,7 @@ const CardSolvedProblems = (props: Props) => {
                                         <TableRow 
                                         key={problem.problemId} 
                                         onClick={() => handleProblemClick(problem as DBProblem)} 
-                                        className="cursor-pointer hover:bg-gray-100">
+                                        className="cursor-pointer hover:bg-gray-200">
                                             <TableCell>
                                                 <div className="flex items-center">
                                                     <BsCheck2Circle className="text-green-500 mr-2" />
@@ -184,6 +187,7 @@ const CardSolvedProblems = (props: Props) => {
                                 size="icon"
                                 onClick={() => goToPage(currentPage - 1)}
                                 disabled={currentPage === 1}
+                                className="bg-gray-100 border-gray-300 hover:border-gray-400 rounded-3xl"
                             >
                                 <ChevronLeft className="h-4 w-4" />
                             </Button>
@@ -195,6 +199,7 @@ const CardSolvedProblems = (props: Props) => {
                                 size="icon"
                                 onClick={() => goToPage(currentPage + 1)}
                                 disabled={currentPage === totalPages}
+                                className="bg-gray-100 border-gray-300 hover:border-gray-400 rounded-3xl"
                             >
                                 <ChevronRight className="h-4 w-4" />
                             </Button>
