@@ -4,10 +4,6 @@ import { AiFillLike, AiFillDislike, AiFillStar, AiOutlineLoading3Quarters } from
 import { TiStarOutline } from 'react-icons/ti'
 import { DBProblem, Problem } from '@/types/problems'
 import { useSession } from 'next-auth/react'
-import CircleSkeletons from '@/components/skeletons/circleSkeletons'
-import RectangleSkeletons from '@/components/skeletons/rectangleSkeletons'
-import { useDispatch } from 'react-redux'
-import { AppDispatch } from '@/app/redux'
 import { useGetProblemByIdTitleQuery, useGetUserDataOnProblemQuery, useUpdateUserLikedProblemMutation, useUpdateUserStarredProblemMutation } from '@/app/state/api'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Card, CardHeader, CardTitle } from '@/components/ui/card'
@@ -17,8 +13,6 @@ type DescriptionProps = {
     problem: Problem | null;
     dbProblem: DBProblem | null;
     idTitle: string;
-    // handleLike: () => void;
-    // handleStar: () => void;
 }
 
 type UserData = {

@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useEffect, useState } from 'react'
 import Split from 'react-split';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
