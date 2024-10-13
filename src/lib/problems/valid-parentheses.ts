@@ -1,6 +1,6 @@
 import assert from "assert";
 import { Problem } from "@/types/problems";
-import TestResults from "@/app/workspace/Playground/TestResults/page";
+import TestResults from "@/components/workspace/Playground/TestResults/page";
 
 export const validParenthesesHandler = (fn: any) => {
 	try {

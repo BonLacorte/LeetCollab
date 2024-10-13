@@ -1,6 +1,6 @@
 'use client';
 
-import Playground from '@/app/workspace/Playground/page';
+import Playground from '@/components/workspace/Playground/page';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import useWindowSize from '@/hooks/useWindowSize';
@@ -12,7 +12,7 @@ import { useSocket } from '@/components/SocketProvider';
 import Confetti from "react-confetti";
 import { useGetProblemByIdTitleQuery } from '@/app/state/api';
 import React from 'react';
-import Description from '@/app/workspace/ProblemDescription/Description/page';
+import Description from '@/components/workspace/Description/page';
 import { Button } from '@/components/ui/button';
 
 interface WorkspaceProps {
